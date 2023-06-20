@@ -14,8 +14,6 @@ def wc(n, U):
     return(s)
 
 
-photons = 12
-
 #start CNOT
 cnot = pcvl.Circuit(6, name="Ralph CNOT")
 #cnot.add((2, 3), symb.PERM([1, 0]))
@@ -44,16 +42,33 @@ bsg.add((2, 3), symb.BS.H())
 bsg.add((4, 5), symb.BS.H())
 bsg.add(0, cz)
 
-
+'''
 fusion = pcvl.Circuit(12, name="FUSION")
 fusion.add(0, bsg)
 fusion.add(6, bsg)
+'''
 
-pcvl.pdisplay(fusion, recursive=True)
-pcvl.pdisplay(fusion.U)
-print(wc(2, fusion.U))
-print(wc(4, fusion.U))
+pcvl.pdisplay(bsg, recursive=True)
+pcvl.pdisplay(bsg.U)
+#print(wc(2, fusion.U))
+#print(wc(4, fusion.U))
+
+q1 = Qbit(2, logical=False)
+q2 = Qbit(4, logical=False)
+
+p0 = Photon(type=PhotonType.SOL)
+p0.set_pos(0)
+p0.set_in_state(0)
+p1 = Photon(type=PhotonType.SOL)
+p1.set_pos(1)
+p1.set_in_state(0)
+
+photons = set([p0, p1]).union(q1.get_photons()).union(q2.get_photons())
+
 
 l = Loop(photons, bsg)
-l.calc_out_states(mode=2)
-l.run_ampli(pcvl.BasicState([0, 0, 1, 0, 1, 0]))
+l.calc_in_state()
+print(l.in_state)
+l.calc_out_states()
+print(l.out_states)
+l.run()
