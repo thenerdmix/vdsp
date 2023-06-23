@@ -5,15 +5,6 @@ import sympy as sp
 
 from Loop import *
 
-def wc(n, U):
-    s='aold'+str(n)+'= '
-    for i in range(len(U[:,n])):
-        s+=pcvl.utils.simple_float(U[i, n])[1].replace('s', 'S').replace('(','[').replace(')',']')+'*a'+str(i)
-        if i < len(U[:,n])-1:
-            s+= ' + '
-    return(s)
-
-
 #start CNOT
 cnot = pcvl.Circuit(6, name="Ralph CNOT")
 #cnot.add((2, 3), symb.PERM([1, 0]))

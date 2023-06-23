@@ -5,15 +5,6 @@ import sympy as sp
 
 from Loop import *
 
-def wc(n, U):
-    s='aold'+str(n)+'= '
-    for i in range(len(U[:,n])):
-        s+=pcvl.utils.simple_float(U[i, n])[1].replace('s', 'S').replace('(','[').replace(')',']')+'*a'+str(i)
-        if i < len(U[:,n])-1:
-            s+= ' + '
-    return(s)
-
-
 #start CNOT
 cnot = pcvl.Circuit(6, name="Ralph CNOT")
 #cnot.add((2, 3), symb.PERM([1, 0]))
@@ -42,17 +33,6 @@ bsg.add((2, 3), symb.BS.H())
 bsg.add((4, 5), symb.BS.H())
 bsg.add(0, cz)
 
-'''
-fusion = pcvl.Circuit(12, name="FUSION")
-fusion.add(0, bsg)
-fusion.add(6, bsg)
-'''
-
-pcvl.pdisplay(bsg, recursive=True)
-pcvl.pdisplay(bsg.U)
-#print(wc(2, fusion.U))
-#print(wc(4, fusion.U))
-
 q0 = Qbit(2, logical=False)
 q1 = Qbit(4, logical=False)
 
@@ -64,12 +44,17 @@ p1.set_pos(1)
 p1.set_in_state(0)
 
 photons = set([p0, p1]).union(q0.get_photons()).union(q1.get_photons())
-qbits = {q0, q1}
 
 
-l = Loop(photons, bsg, qbits)
+l = Loop(photons, bsg, qbits={q0, q1})
 l.calc_in_state()
 print(l.in_state)
-l.calc_out_states(postprocess=True)
+
+
+#l.fuse(q1, q2)
+
+pcvl.pdisplay(l.circuit)
+
+l.calc_out_states(postprocess=False)
 print(l.out_states)
-l.run_format()
+l.run()

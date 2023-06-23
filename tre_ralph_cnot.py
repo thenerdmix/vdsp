@@ -5,14 +5,6 @@ import sympy as sp
 
 from Loop import *
 
-def wc(n, U):
-    s='aold'+str(n)+'= '
-    for i in range(len(U[:,n])):
-        s+=pcvl.utils.simple_float(U[i, n])[1].replace('s', 'S').replace('(','[').replace(')',']')+'*a'+str(i)
-        if i < len(U[:,n])-1:
-            s+= ' + '
-    return(s)
-
 
 #start CNOT
 cnot = pcvl.Circuit(6, name="Ralph CNOT")
@@ -42,34 +34,53 @@ bsg.add((2, 3), symb.BS.H())
 bsg.add((4, 5), symb.BS.H())
 bsg.add(0, cz)
 
-'''
-fusion = pcvl.Circuit(12, name="FUSION")
-fusion.add(0, bsg)
-fusion.add(6, bsg)
-'''
-
-pcvl.pdisplay(bsg, recursive=True)
-pcvl.pdisplay(bsg.U)
-#print(wc(2, fusion.U))
-#print(wc(4, fusion.U))
-
-q0 = Qbit(2, logical=False)
-q1 = Qbit(4, logical=False)
-
 p0 = Photon(type=PhotonType.SOL)
 p0.set_pos(0)
 p0.set_in_state(0)
 p1 = Photon(type=PhotonType.SOL)
 p1.set_pos(1)
 p1.set_in_state(0)
+q0 = Qbit(2, logical=False)
+q1 = Qbit(4, logical=False)
 
-photons = set([p0, p1]).union(q0.get_photons()).union(q1.get_photons())
-qbits = {q0, q1}
+p2 = Photon(type=PhotonType.SOL)
+p2.set_pos(6)
+p2.set_in_state(0)
+p3 = Photon(type=PhotonType.SOL)
+p3.set_pos(7)
+p3.set_in_state(0)
+q2 = Qbit(8, logical=False)
+q3 = Qbit(10, logical=False)
 
+p4 = Photon(type=PhotonType.SOL)
+p4.set_pos(12)
+p4.set_in_state(0)
+p5 = Photon(type=PhotonType.SOL)
+p5.set_pos(13)
+p5.set_in_state(0)
+q4 = Qbit(14, logical=False)
+q5 = Qbit(16, logical=False)
 
-l = Loop(photons, bsg, qbits)
+fuse = pcvl.Circuit(18, name="fuse")
+fuse.add(0, bsg)
+fuse.add(6, bsg)
+fuse.add(12, bsg)
+
+photons = {p0, p1, q0.pH, q0.pV, q1.pH, q1.pV, 
+           p2, p3, q2.pH, q2.pV, q3.pH, q3.pV,
+           p4, p5, q4.pH, q4.pV, q5.pH, q5.pV}
+
+qbits = {q0, q1, q2, q3, q4, q5}
+
+l = Loop(photons, fuse, qbits)
+
 l.calc_in_state()
 print(l.in_state)
-l.calc_out_states(postprocess=True)
-print(l.out_states)
+
+l.fuse(q1, q2)
+l.fuse(q3, q4)
+pcvl.pdisplay(l.circuit, recursive=True)
+
+l.calc_out_states()
+
 l.run_format()
