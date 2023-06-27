@@ -9,12 +9,14 @@ start.add((0, 1), symb.BS.H())
 start.add((2, 3), symb.BS.H())
 
 fusion = pcvl.Circuit(4, name="fusion")
-fusion.add((0, 1, 2), symb.PERM([2, 1, 0]))
+fusion.add((0, 1), symb.PERM([1, 0]))
+fusion.add((1, 2), symb.PERM([1, 0]))
+fusion.add((0, 1), symb.PERM([1, 0]))
 fusion.add((0, 1), symb.BS.H())
 
 gen = pcvl.Circuit(4, name="gen")
 gen.add(0, start)
 gen.add(0, fusion)
 
-pcvl.pdisplay(gen, recursive=True)
-pcvl.pdisplay(gen.U)
+pcvl.pdisplay(fusion, recursive=True)
+pcvl.pdisplay(fusion.U)

@@ -117,7 +117,9 @@ class Loop(object):
         self.photons = photons
         self.qbits = qbits
 
-        self.n_out = 0
+        self.nph = 0
+
+        self.unitaries = []
 
     def add_bs(self):
         if self.circuit != None:
@@ -150,7 +152,7 @@ class Loop(object):
         for p in self.photons:
                 assert p.in_state != None, "Photon was not initialized correctly"
                 in_state[p.pos] = p.in_state
-                self.n_out += p.in_state
+                self.nph += p.in_state
         self.in_state = in_state
 
     def fuse(self, q1:Qbit, q2:Qbit):
@@ -182,11 +184,11 @@ class Loop(object):
         
     def calc_out_states(self, logical, witness):
         if logical or witness:
-            for l in partition(self.n_out, len(self.photons)):
+            for l in partition(self.nph, len(self.photons)):
                 if check(self.photons, l, logical=logical, witness=witness):
                     self.out_states.append(l)
         else:
-            for l in partition(self.n_out, len(self.photons)):
+            for l in partition(self.nph, len(self.photons)):
                 self.out_states.append(l)
 
 
@@ -214,3 +216,37 @@ class Loop(object):
         backend = pcvl.BackendFactory.get_backend(backend)
         sim = backend(self.circuit)
         return(sim.probampli_be(input_state=pcvl.BasicState(in_state), output_state = pcvl.BasicState(out_state)))
+
+    def loopify(self):
+        last = [None]*len(self.photons)
+        loop = {}
+        for u in self.circuit._components:
+            if (last[u[0][0]] == None) and (last[u[0][1]] == None):
+                loop[u] = 0
+            elif last[u[0][0]] == last[u[0][1]]:
+                loop[u] = loop[last[u[0][0]]]
+            else:
+                l1 = 0
+                l2 = 0
+                if last[u[0][0]] != None:
+                    l1 = loop[last[u[0][0]]]
+                if last[u[0][1]] != None:
+                    l2 = loop[last[u[0][1]]]
+            
+                l = max(l1, l2+1)
+            
+                loop[u] = l
+
+            last[u[0][0]] = last[u[0][1]] = u
+
+        sorted_loop = dict(sorted(loop.items(), key=lambda x: x[1]))
+
+        self.circuit = pcvl.Circuit(len(self.photons))
+
+        current_loop = 0
+        for s in sorted_loop:
+            if(current_loop != sorted_loop[s]):
+                self.circuit.add(0, symb.PERM(list(range(len(self.photons)))))
+                current_loop = sorted_loop[s]
+
+            self.circuit.add(s[0], s[1]) 
