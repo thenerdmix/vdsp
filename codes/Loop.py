@@ -196,7 +196,7 @@ class Loop(object):
         self.calc_out_states(logical, witness)
         for o in self.out_states:
             p = self.ampli(self.in_state, o)
-            if(abs(p) > 10e-3):
+            if(abs(p) > 10e-10):
                 print(o)
                 print(p)
 
@@ -204,7 +204,7 @@ class Loop(object):
         self.calc_out_states(True, True)
         for o in self.out_states:
             p = self.ampli(self.in_state, o)
-            if(abs(p) > 10e-3):
+            if(abs(p) > 10e-10):
                 dic = format_logical(self.qbits, o)
 
                 for key in sorted(dic):

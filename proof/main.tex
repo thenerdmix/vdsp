@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{physics}
+\usepackage{amsmath,amssymb}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage[skip=10pt plus1pt, indent=10pt]{parskip}
+
+\DeclareMathOperator{\spn}{span}
+\newcommand{\unit}{1\!\!1}
+
+\title{Fusing resource states}
+\date{}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    We introduce the concept of \textit{post selected resource state} (PSRS), a state with a specific number of photons that represents a particular graph state in the logical basis. This class of states models what we can create in the lab with a reasonable optical setups. We show that we can safely fuse two PSRSs to get a new PSRSs. This enables the creation of arbitrarly big tree-like graph states.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\section{Post selected resource states}. 
+Let's start by the definition of \textit{post selected resource states} (PSRSs). The main idea is that PSRSs are easily produced in the lab.
+
+Suppose we want to build the graph state $\ket{G}$ made of $Q$ qubits. We will build this with some linear optic setup, using dual rail enconding. So the setup will consist of $2Q$ logical modes corresponding to $\mathcal{H}_Q$ and $A$ ancillary modes corresponding to $\mathcal{H}_A$. In the dual rail enconding we have that to represent one logical qubit $q^{(i)}$ we need two modes $q^{(i)}_Hq^{(i)}_V$:
+\begin{align*}
+   \ket{F}_{q^{(i)}} \rightarrow \ket{10}_{q^{(i)}_Hq^{(i)}_V} \\
+   \ket{T}_{q^{(i)}} \rightarrow \ket{01}_{q^{(i)}_Hq^{(i)}_V}
+\end{align*}
+We will use the concept of "working in the coincidence basis", that we can formalize introducing the subspace of logical codes:
+\begin{align*}
+    \mathcal{H}_L = \spn\{\ket{10}_{q^{(1)}_Hq^{(1)}_V}, \ket{01}_{q^{(1)}_Hq^{(1)}_V} \} \otimes \dots \otimes \spn\{\ket{10}_{q^{(Q)}_Hq^{(Q)}_V}, \ket{01}_{q^{(Q)}_Hq^{(Q)}_V} \} \subset \mathcal{H}_Q
+\end{align*}
+We will also use the projector $\Pi_L$ on this subspace $\mathcal{H}_L$.
+
+Now consider some optical setup that implement some unitary $U$ that creates the graph state $\ket G$ in the coincidence basis. What does this mean more formally? We will consider setups where the input state is:
+\begin{align*}
+   \ket{in} = \ket{10}_{q^{(1)}_Hq^{(1)}_V} \otimes \dots \otimes \ket{10}_{q^{(Q)}_Hq^{(Q)}_V} \otimes \ket{0}_{a^{(1)}} \otimes \dots \otimes \ket{0}_{a^{(A)}}
+\end{align*}
+After injecting this state in the setup we get as output $\ket{out} = U\ket{in}$. We will say that the state $\ket{out}$ \textit{well-represents} the graph state $\ket{G}$ if
+\begin{align*}
+    \ket{G} = \tr_A\left[\Pi_L \otimes \unit_A \ket{out}\bra{out}\Pi_L \otimes \unit_A\right] = \Pi_L \tr_A\left[\ket{out}\bra{out}\right] \Pi_L
+\end{align*}.
+Clearly both $\ket{in}$ and $\ket{out}$ have $Q$ photons. We will call the $\ket{out}$ state we have produced in the lab \textit{post selected resource state}. This procedure motivates the following definition.
+
+\textbf{Definition (PSRS).} A state $\ket{\psi}$ with its corresponding graph state $\ket{G}$ is said to be a \textit{post selected resource state} if $\ket{\psi}$ well represents $\ket{G}$ and $\ket{\psi}$ has $Q$ photons.
+
+Notice that the unitary $U$ preserves the number of photons so the $\Pi_L \otimes \unit_A \ket{out}$ will always have $0$ photons in the ancillary modes:
+\begin{align*}
+    \Pi_L \otimes \unit_A \ket{out}  = \ket{\text{something}}_Q \otimes \ket{0}_{a^{(1)}} \otimes \dots \otimes \ket{0}_{a^{(A)}} 
+\end{align*}
+
+\newpage
+\section{Fusion gates}
+Consider four modes $a_H, a_V, b_H, b_V$ (I will omit the $\dagger$s for semplicity). A \textit{fusion gate} consists of two parts. The first part is the following linear substitution:
+\begin{align*}
+    a_H &\rightarrow d_H \\
+    a_V &\rightarrow \frac{c_H-c_V}{\sqrt{2}} \\
+    b_H &\rightarrow \frac{c_H+c_V}{\sqrt{2}} \\
+    b_V &\rightarrow d_V
+\end{align*}
+The second part consists in measuring the modes $(c_H, c_V)$ and postselecting the result $(1, 0)$. By construction, fusion is just a linear map $\Phi: \mathcal{H} \rightarrow \mathcal{H'}$ where $\mathcal{H}$ has $n$ modes and $\mathcal{H'}$ has $n' = n-2$ modes.
+
+Let's check how fusion acts on a Fock state of the form $a_H^m a_V^{m'} b_H^{n'}b_V^{n}\ket{\mathbf{0}}$ where $\ket{\mathbf{0}}$ is the vacuum. The first observation is that if we are not in the case where $(m' = 1, n' = 0)$ or $(m' = 0, n' = 1)$ the state will be discarded by the measuring process. In fact in a term of the form
+\begin{align*}
+    \left(\frac{c_H-c_V}{\sqrt{2}}\right)^{m'} \left(\frac{c_H+c_V}{\sqrt{2}}\right)^{n'}
+\end{align*}
+the only monomial in the expansion that doesn't contain a $c_V$ is the $c_H^{m'+n'}$ term. But if we want to measure just a photon in the $c_H$ mode we want $m'+n'=1$ and so the two only possible cases are $(m' = 1, n' = 0)$ or $(m'=0, n'=1)$. 
+
+So we have discovered a first rule: if we are not in the case where $(m' = 1, n' = 0)$ or $(m'=0, n'=1)$ we have:
+\begin{align}
+    \label{destroy}
+    a_H^m a_V^{m'} b_H^{n'}b_V^{n}\ket{\mathbf{0}} \xrightarrow{\Phi} 0 
+\end{align}
+where by $0$ I just really mean the real number 0.
+
+Now fix $(m' = 1, n' = 0)$ or $(m'=0, n'=1)$:
+\begin{align}
+    \label{keep1}
+    a_H^m a_V^{1} b_H^{0}b_V^{n}\ket{\mathbf{0}} \xrightarrow{\Phi} d_H^{m} d_V^{n}\ket{\mathbf{0}} \\
+    \label{keep2}
+    a_H^m a_V^{0} b_H^{1}b_V^{n}\ket{\mathbf{0}} \xrightarrow{\Phi} d_H^{m} d_V^{n}\ket{\mathbf{0}}
+\end{align}
+
+Let's summarize what we discovered about fusion in a more readable form. Let's introduce the notation:
+\begin{align*}
+   \ket{F(alse)}_a = \ket{10}_{a_Ha_V} \\
+   \ket{T(rue)}_a = \ket{10}_{a_Ha_V} \\
+   \ket{E(mpty)}_a = \ket{00}_{a_Ha_V}\\
+   \ket{O(ne)}_a = \ket{11}_{a_Ha_V}
+\end{align*}
+
+Consider the space 
+\begin{align}
+\label{goodset}
+\nonumber
+\mathcal{S} &= \spn\{a_H^m a_V^{m'} b_H^{n'}b_V^{n}\ket{\mathbf{0}}, m, m', n', n \leq 1\} \\&= \spn\{\ket{F}_a, \ket{T}_a, \ket{E}_a, \ket{O}_a\} \otimes \spn\{\ket{F}_b, \ket{T}_b, \ket{E}_b, \ket{O}_b\} 
+\end{align}
+Clearly $\dim\mathcal{S} = 16$. To completely characterize how fusion acts on $\mathcal{S}$ we have to give 16 rules for the basis elements and then by linearity we know how it works on the whole space.
+
+$\star$ \textbf{Group 1.}
+
+\begin{align*}
+    \ket{T}_a \xleftrightarrow{\Phi} \ket{T}_b &\implies \ket{T}_d\\
+    \ket{F}_a \xleftrightarrow{\Phi} \ket{F}_b &\implies \ket{F}_d\\
+    \ket{T}_a \xleftrightarrow{\Phi} \ket{F}_b &\implies 0\\
+    \ket{F}_a \xleftrightarrow{\Phi} \ket{T}_b &\implies 0
+\end{align*}
+These rules are what we expect from a working fusion. In fact when we fuse a monomial according to these rules we are just implementing the right fusion gate:
+\begin{align}
+    \label{goodfusion}
+    \Phi \sim \ket{T}_{d}\prescript{}{a}{\bra{T}}\prescript{}{b}{\bra{T}}+\ket{F}_{d}\prescript{}{a}{\bra{F}}\prescript{}{b}{\bra{F}}
+\end{align}
+
+$\star$ \textbf{Group 2.}
+
+\begin{align*}
+    \ket{O}_a \xleftrightarrow{\Phi} \ket{O}_b &\implies 0\\
+    \ket{E}_a \xleftrightarrow{\Phi} \ket{E}_b &\implies 0\\
+    \ket{T}_a \xleftrightarrow{\Phi} \ket{E}_b &\implies \ket{E}_d\\
+    \ket{E}_a \xleftrightarrow{\Phi} \ket{F}_b &\implies \ket{E}_d\\
+    \ket{F}_a \xleftrightarrow{\Phi} \ket{O}_b &\implies \ket{O}_d\\
+    \ket{O}_a \xleftrightarrow{\Phi} \ket{T}_b &\implies \ket{O}_d
+\end{align*}
+These six rules will turn out to be harmless: in this cases the fusion either destroys the monomial (first two cases) or it doesn't generate a logical acceptable qubit and so the monomial will be discarded by the projection on the logical basis.
+
+$\star$ \textbf{Group 3.}
+
+\begin{align}
+    \label{oef}
+    \ket{O}_a \xleftrightarrow{\Phi} \ket{E}_b \implies \ket{F}_d\\
+    \label{eot}
+    \ket{E}_a \xleftrightarrow{\Phi} \ket{O}_b \implies \ket{T}_d
+\end{align}
+These last two rules are the ones that will give us an hard time in the later discussion, because we get a logical acceptable qubit from two qubits that are not logical.
+
+
+So we have completely characterized how fusion acts on $\mathcal{S}$: we have given the rules for how fusion acts on its basis elements and by linearity we know how fusion acts on the whole subspace.
+
+Now let's make a crucial observation on what happens when we apply fusion to an element outside $\mathcal{S}$ (so when there is more than one photons in at least one of the $a_H, a_V, b_H, b_V$ or equivalently at least one of $m, m', n', n$ is strictly greater than $1$). This observation will help greatly simplify our reasoning later.
+
+\textbf{Crucial observation (Fusion outside $\mathcal{S}$).} Suppose we have modes\\$q^{(1)}_H, q^{(1)}_V, \dots q^{(Q)}_H, q^{(Q)}_V$ and we start with a state with numbers of photons in each mode given by the array $[n^{(1)}_H, n^{(1)}_V, \dots n^{(Q)}_H, n^{(Q)}_V]$. Suppose that in some mode $H/V$ we have more than one photon: $n^{(\bar{i})}_{H/V} =\bar{g}> 1$. Now suppose that we start fusing qubits: we apply a succession of fusion gates $\{\Phi_{i_1, j_1}, \dots, \Phi{i_N, j_N}\}$, where $\Phi_{i, j}$ naturally means to apply a fusion gate to modes $q^{(i)}_H, q^{(i)}_V,  q^{(j)}_H, q^{(j)}_V$. The crucial observation is that after this $N$ fusion we still get a state of $2(Q-N)$ modes, where there is at least one mode with population $\bar{g}$ or alternatively we destroyed the initial state (we got $0$ at some point).
+
+\textbf{Proof.} The reasoning is the following: suppose that after some fusions we fuse the incriminated qubit $\bar{i}$. We have four possibilities depending on the position of the mode with $\bar{g}$ photons in the fusion. If $m' = \bar{g}$ or $n' = \bar{g}$ the fusion destroys the state because $\bar{g} > 1$ (see the rule in (\ref{destroy})). If $m = \bar{g}$ or $n = \bar{g}$ we either destroy the state (depending on the values of $m'$ and $n'$) or we get a new mode $d_{H/V}$ with $\bar{g}$ photons (see the rules in (\ref{keep1}) and in (\ref{keep2})). The observation can then be proved on induction on the number of fusions $N$.\hfill $\square$
+
+\textbf{Another crucial observation (Number of photons after fusion).} Applying fusion to a state on $2Q+A$ modes with $Q$ photons either destroys the state or we get a state on $2(Q-1)+A$ modes with $Q-1$ qubits.
+
+\newpage
+\section{Fusing PSRSs}
+Let's now move to the main theorems we wish to prove.
+
+\textbf{Theorem (Fusing two PSRS).} Consider a PSRS $\ket{\psi} \in \mathcal{H}_{Q} \otimes \mathcal{H}_{A}$ that $\textit{well-represents}$ the graph state $\ket{G}$ and another PSRS $\ket{\psi'} \in \mathcal{H}_{Q'} \otimes \mathcal{H}_{A'}$ that $\textit{well-represents}$ the graph state $\ket{G'}$. If we fuse two qubits $q_i, q'_j$ (belonging to $\ket{\psi}, \ket{\psi'}$ respectively) the new state after the fusion $\Phi(\ket{\psi}\otimes\ket{\psi'})$ is itself a PSRS that well represents the graph state obtained fusing the vertices $i$ and $j$ of the graphs $G$ and $G'$.
+
+\textbf{Proof.} The state $\ket{\psi}$ will be the superposition of monomials of the form $[q^{(1)}_H, q^{(1)}_V, \dots, q^{(Q)}_H, q^{(Q)}_V, a^{(1)}, \dots, a^{(A)}]$ (we are just giving the occupation numbers). The state $\ket{\psi'}$ will be the superposition of monomials of the form \\ $[q'^{(1)}_H, q'^{(1)}_V, \dots, q'^{(Q')}_H, q'^{(Q')}_V, a'^{(1)}, \dots, a'^{(A')}]$. So the product $\ket{\psi} \otimes \ket{\psi'}$ will be a superposition of monomials of the form:
+\begin{align}
+\label{monomial}
+\nonumber
+&[q^{(1)}_H, q^{(1)}_V, \dots, q^{(Q)}_H, q^{(Q)}_V, a^{(1)}, \dots, a^{(A)}] \otimes [q'^{(1)}_H, q'^{(1)}_V, \dots, q'^{(Q')}_H, q'^{(Q')}_V, a'^{(1)}, \dots, a'^{(A')}] \\ \cong
+&[q^{(1)}_H, q^{(1)}_V, \dots, q^{(Q)}_H, q^{(Q)}_V, a^{(1)}, \dots, a^{(A)}, q'^{(1)}_H, q'^{(1)}_V, \dots, q'^{(Q')}_H, q'^{(Q')}_V, a'^{(1)}, \dots, a'^{(A')}]
+\end{align}
+We have already discussed how fusion acts on monomials and thus by linearity we know how it will act on $\ket{\psi} \otimes \ket{\psi'}$.
+
+The main idea is the following: monomials before fusion of the  form $(\ref{monomial})$ can be logical or not (of course we mean that every qubit $q \in Q$ and $q' \in Q$ is in a logical format). We will call that subspace of logical monomials before fusion $\mathcal{L} = \spn\{\text{logical monomials}\} \subset \mathcal{H}_{Q} \otimes\mathcal{H}_{Q'} \otimes\mathcal{H}_A \otimes\mathcal{H}_{A'}$. Monomials that are logical before fusion transforms well under fusion (in the sense that fusion acts as (\ref{goodfusion})). One can prove that if fusion works well the action on the corresponding graph states $\ket{G}$, $\ket{G'}$ is that of fusing the according vertices (we will not give a proof of this fact here). In other words, if we had $\ket{\psi} \otimes \ket{\psi'} \in \mathcal{L}$ the theorem would be proven.
+
+We will prove that if a monomial is non logical before fusion (is in $\mathcal{L}^{\perp}$), it will be either destroyed by the fusion or after fusion it will still be non logical and so it will be destroyed by the projection.
+
+First observe that if there's an occupation number strictly bigger than $1$, the monomial will be destroyed when we will project on the logical basis of $\mathcal{H}_{Q} \otimes\mathcal{H}_{Q'} \otimes\mathcal{H}_A \otimes\mathcal{H}_{A'}$. This follows from the crucial observation we stated before: also if we have $q^{(i)}_H > 1$  or $q^{(i)}_V > 1$ the monomial gets either destroyed by the fusion or by the projection in the logical basis, because fusion cannot help reducing the number of photons $n>1$ in a mode. So we can just consider monomials with all the occupation numbers less than or equal to $1$.
+
+
+
+Thanks to these two observations we just have to study fusion on the monomials with all the occupation numbers smaller or equal to $1$. We perfectly know the rules of fusion on this set here. Let's call $d=(d_H, d_V)$ the new qubit we get after fusion.
+
+Consider a non logical monomial with all the occupation numbers smaller than or equal to one. We have three possible cases based on the $\star$ \textbf{Group 1, 2, 3} classification introduce before:
+
+\textit{The monomial is in $\star$ Group 1.} This means that the qubits $q_i$ and $q_j'$ are in a logical format. So there must exist a qubit untouched by fusion in $Q \backslash \{q_i\} \cup Q' \backslash \{q_j'\}$ that is non logical: the monomial will be destroyed by projection.
+
+\textit{The monomial is in $\star$ Group 2.} In this case we get a new qubit $d$ that is non logical: the monomial will be destroyed by projection.
+
+And now the more tricky part.
+
+\textit{The monomial is in $\star$ Group 3.}  Suppose  for instance we are fusing a monomial obeying to rule $(\ref{eot})$, so a monomial of this kind:
+\begin{align*}
+   [\dots, q^{(i)}_H=0, q^{(i)}_V=0, q'^{(j)}_H=1, q'^{(j)}_V=1, \dots] = \dots \otimes \ket{E}_{q_i} \otimes \ket{O}_{q'_j}\otimes\dots
+\end{align*} 
+After fusion we get
+\begin{align*}
+   [\dots, d_H=0, d_H = 1, \dots] = \dots \otimes \ket{T}_d \otimes \dots
+\end{align*} 
+Now notice that if the qubit $q_j'$ is in the state $\ket{O}_{q_j'}$ there must exist another qubit $q_k'$ in the state $\ket{E}_{q_k'}$ because $\ket{\psi'}$ is a PSRS and so it must contain $Q'$ photons. To summarize the monomial transforms as:
+\begin{align*}
+    \dots \otimes \ket{E}_{q_i} \otimes \ket{O}_{q'_j}\otimes\dots \otimes \ket{E}_{q'_k} \otimes \dots
+    \xrightarrow{\Phi}\dots \otimes \ket{T}_{d}\otimes\dots \otimes \ket{E}_{q'_k} \otimes \dots
+\end{align*}
+So at the end this monomial gets destroyed by projection on the logical basis because of the qubit $q_k'$.
+The same exact reasoning applies if the monomial obeys to rule $(\ref{oef})$.
+
+We thus conclude that the new state after fusion well represents the new graph with $Q+Q'-1$ vertices obtained by the fusion of graphs $G$ and $G'$. In addition, thanks to the observation on how fusion changes the number of photons in a state, we also conlcude that the new state after fusion will have $Q+Q'-1$ photons and thus it is a PSRS.\hfill$\square$
+
+\textbf{Corollary (Fusing multiple PSRS).} In the lab we will start with a set of $N$ PSRSs of different kinds $\{\ket{\psi_1}, \dots, \ket{\psi_N}\}$. After $N$ fusion we will get a final PSRS. Thanks to the previous theorem we see that is safe to fuse the PSRSs in the way we prefer: fusing two PSRSs always gives us a PSRS. Both the following example procedures works, that of course will lead to different final graph states:
+\begin{enumerate}
+    \item We can first fuse $\ket{\psi_1}$ with $\ket{\psi_2}$. Then fuse $\ket{\psi_3}$ with this first PSRS obtained by the fusion of the first two and so on.
+    \item We can first fuse the first $N/2$ PSRSs in some way and the remaining PSRSs in other way and than fuse the two PSRSs states together.
+\end{enumerate}
+
+\textbf{Corollary (Building a tree-like graph state with post selected two vertices PSRS).} Suppose that in the lab we are able to generate $N$ two vertices PSRS. We can fuse them together to get an arbitrary tree-like graph state in the logical basis with $N-1$ vertices.
+
+
+\end{document}

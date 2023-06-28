@@ -1,4 +1,11 @@
 __pycache__/
 *.py[cod]
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
 .*
 !.gitignore
