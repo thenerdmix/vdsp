@@ -32,25 +32,13 @@ bsg.add((4,5), symb.PERM([1, 0]))
 bsg.add((5,6), symb.PERM([1, 0]))
 bsg.add((4,5), symb.PERM([1, 0]))
 
-bsg.add(2, fusion, merge=True)
-
-
 q0 = Qbit(0, logical=False)
 q1 = Qbit(2, logical=False)
 q2 = Qbit(4, logical=False)
 q3 = Qbit(6, logical=False)
 
-q1.pH.type = PhotonType.WITNESS
-q1.pH.set_witness(0)
-q1.pV.type = PhotonType.WITNESS
-q1.pV.set_witness(1)
-
-q2.pH.type = PhotonType.WITNESS
-q2.pH.set_witness(0)
-q2.pV.type = PhotonType.WITNESS
-q2.pV.set_witness(1)
-
 l = Loop(circuit=bsg, photons=photons_from_qubit([q0, q1, q2, q3]), qbits=[q0, q1, q2, q3])
+l.fuse2(q1, q2)
 
 pcvl.pdisplay(l.circuit)
 

@@ -206,5 +206,38 @@ We thus conclude that the new state after fusion well represents the new graph w
 
 \textbf{Corollary (Building a tree-like graph state with post selected two vertices PSRS).} Suppose that in the lab we are able to generate $N$ two vertices PSRS. We can fuse them together to get an arbitrary tree-like graph state in the logical basis with $N-1$ vertices.
 
+\textbf{What can't we do?} Suppose we want to generate in the lab a graph state that is not a tree. So given for example a tree-like PSRS $\ket{\psi}$ we try to fuse two qubits $q_i, q_j$ to create a cycle. In this case can get terribly wrong because the monomials in \textbf{$\star$ Group 3} won't be destroyed by the projection after fusion because there is no qubit $q_k$ left in the non logical state $\ket{E}_{q_k}$.
+
+\section{Type II fusion}
+Let's introduce a new type of fusion, called \textit{Type II fusion}. Also this kind of fusion is made of two parts. Firstly a linear transformation
+\begin{align*}
+   a_H &\rightarrow \frac{1}{2}\left[c_H-c_V+d_H+d_V\right] \\
+   a_V &\rightarrow \frac{1}{2}\left[-c_H+c_V+d_H+d_V\right] \\
+   b_H &\rightarrow \frac{1}{2}\left[c_H+c_V+d_H-d_V\right] \\
+   b_V &\rightarrow \frac{1}{2}\left[c_H-c_V-d_H+d_V\right] \\
+\end{align*}
+and then postselecting states with $(c_H, c_V, d_H, d_V) = (1, 0, 1, 0)$.
+
+Now let's look at how a monomial
+\begin{align*}
+    a_H^m a_V^n b_H^r b_V^s
+\end{align*}
+get's transformed. It's clear that if the degree of the monomial is not two it gets destroyed. So let's check the behaviour of the monomials of degree two:
+\begin{align*}
+    a_H^{2} &\rightarrow 1\\
+    a_Ha_V  &\rightarrow 0\\
+    a_Hb_H  &\rightarrow 1\\
+    a_Hb_V  &\rightarrow 0\\
+    a_V^{2} &\rightarrow -1\\
+    a_Vb_H  &\rightarrow 0\\
+    a_Vb_V  &\rightarrow 1\\
+    b_H^{2} &\rightarrow 1\\
+    b_H b_V &\rightarrow 0\\
+    b_V^{2} &\rightarrow -1
+\end{align*}
+
+\section{On the number of outer loops}
+Suppose we want to build a tree with $N$ vertices, fusing together $N-1$ Bell pairs. We know discuss some results about the minimal number of outer loops we need.
+
 
 \end{document}

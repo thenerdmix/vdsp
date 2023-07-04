@@ -7,5 +7,6 @@ __pycache__/
 *.out
 *.synctex.gz
 *.toc
+compiler/QASMBench/*
 .*
 !.gitignore
