@@ -16,7 +16,7 @@ def create_tree(graph, head_value):
 
     tree_head = TreeNode(head_value)
     t = Tree(tree_head)
-    t.pyg = graph
+    t.pyg = graph.copy()
 
     recursive_dfs(graph, tree_head, t, visited)
 
@@ -27,10 +27,6 @@ def recursive_dfs(graph, node, tree, visited):
     visited.add(node.value)
 
     tree.vertices.append(node)            
-    node.pyv = tree.pyg.add_vertex(ty=graph.type(node.value), phase=graph.phase(node.value), row=node.value, qubit=2)
-
-    if(node.parent is not None):
-        tree.pyg.add_edge(graph.edge(node.pyv, node.parent.pyv), edgetype=zx.EdgeType.HADAMARD)
 
     for n in graph.neighbors(node.value):
         if n not in visited:
@@ -39,9 +35,11 @@ def recursive_dfs(graph, node, tree, visited):
             tree_n.parent = node
             node.children.append(tree_n)
 
+            tree.pyg.set_edge_type(tree.pyg.edge(n, node.value), 1)
+            print()
+
             recursive_dfs(graph, tree_n, tree, visited)
-
-
+        
 class Tree:
     def __init__(self, head):
         self.head = head
@@ -64,6 +62,9 @@ class Graph:
         optimize_graph(g)
         g.normalize()
 
-        self.original_graph=g.copy()
+        self.original_graph=g
+
+        g = g.copy()
+        g.remove_vertices(g.inputs()+g.outputs())
+
         self.graph = g.copy()
-        self.graph.remove_vertices(self.graph.inputs()+self.graph.outputs())
