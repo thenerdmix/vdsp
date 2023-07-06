@@ -11,40 +11,92 @@ def optimize_graph(g):
     zx.full_reduce(g)
     zx.simplify.interior_clifford_simp(g)
 
-def create_tree(graph, head_value):
+def create_tree_dfs(graph, head_value):
     visited = set()
 
     tree_head = TreeNode(head_value)
     t = Tree(tree_head)
-    t.pyg = graph.copy()
 
-    recursive_dfs(graph, tree_head, t, visited)
+    stack = []
+    stack.append(tree_head)
+    visited.add(tree_head.value)
+
+    while stack:
+        node = stack.pop()
+        t.vertices.append(node)
+
+        for n in graph.neighbors(node.value):
+            if n not in visited:
+                tree_n = TreeNode(n)
+                tree_n.parent = node
+                node.children.append(tree_n)
+
+                visited.add(n)
+                stack.append(tree_n)
+    return t
+
+def traverse_dfs(tree, head_node):
+    visited = set()
+
+    tree_head = TreeNode(head_node.value)
+    t = Tree(tree_head)
+
+    stack = []
+    stack.append(head_node)
+    visited.add(head_node.value)
+
+    while stack:
+        node = stack.pop()
+        t.vertices.append(node)
+
+        for n in node.neighbors():
+            if n.value not in visited:
+                tree_n = TreeNode(n.value)
+                tree_n.parent = node
+                node.children.append(tree_n)
+
+                visited.add(n.value)
+                stack.append(n)
 
     return t
 
+def create_tree_bfs(graph, head_value):
+    visited = set()
 
-def recursive_dfs(graph, node, tree, visited):
-    visited.add(node.value)
+    tree_head = TreeNode(head_value)
+    t = Tree(tree_head)
 
-    tree.vertices.append(node)            
+    queue = []
+    queue.append(tree_head)
+    visited.add(tree_head.value)
 
-    for n in graph.neighbors(node.value):
-        if n not in visited:
+    while queue:
+        node = queue.pop(0)
+        t.vertices.append(node)
 
-            tree_n = TreeNode(n)
-            tree_n.parent = node
-            node.children.append(tree_n)
+        for n in graph.neighbors(node.value):
+            if n not in visited:
+                tree_n = TreeNode(n)
+                tree_n.parent = node
+                node.children.append(tree_n)
 
-            tree.pyg.set_edge_type(tree.pyg.edge(n, node.value), 1)
-            print()
+                visited.add(n)
+                queue.append(tree_n)
+    return t
 
-            recursive_dfs(graph, tree_n, tree, visited)
+def py_tree(graph, tree):
+    queue =[]
+    queue.append(tree.head)
+    while queue:
+        node = queue.pop(0)
+        for n in node.children:
+            queue.append(n)
+            graph.set_edge_type(graph.edge(n.value, node.value), 1)
         
 class Tree:
     def __init__(self, head):
         self.head = head
         self.vertices = []
-        self.pyg = None
 
 class TreeNode:
     def __init__(self, value):
@@ -52,7 +104,11 @@ class TreeNode:
         self.parent = None
         self.children = []
 
-        self.pyv = None
+    def neighbors(self):
+        if self.parent != None:
+            return [self.parent] + self.children
+        else:
+            return self.children
 
 class Graph:
 
