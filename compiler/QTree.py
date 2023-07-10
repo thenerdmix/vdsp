@@ -50,6 +50,36 @@ class QTree:
             #self.last = parent
 
         def depth_analysis(self):
+            anal = [None]*len(self.qvertices)
             for v in self.qvertices:
-                print("vertex:", v, "depth:", self.loop.loopify(display=False)[self.qvertices[v].pH.pos])
-                print()
+                ph = self.loop.loopify(display=False)[self.qvertices[v].pH.pos]
+                pv = self.loop.loopify(display=False)[self.qvertices[v].pH.pos]
+                if(ph==pv):
+                    d = ph
+                else:
+                    d = max(ph, pv+1)
+
+                if d==0:
+                    d+=1
+
+                #print("vertex:", v, "depth:", d)
+                #print()
+
+                anal[v] = d
+                
+            return anal
+
+        def add_simul(self, parent, leaf, order, depth):
+            if order.index(parent) < len(order)-1:
+                m = depth[order.index(parent)]-1
+                for i in range(order.index(parent)+1, len(order)):
+                    m = max(m, depth[i])
+                    depth[i-1] = m+2
+                    order[i-1] = order[i]
+                order[len(order)-1] = parent
+                depth[len(order)-1] = m+2
+                
+            depth[len(order)-1] += 1
+
+            order.append(leaf)
+            depth.append(1)
