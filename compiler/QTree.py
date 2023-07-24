@@ -31,7 +31,7 @@ class QTree:
             self.loop.sink(q_up, q_down) 
 
         def add_edge(self, parent, leaf, sink=True):
-            print("ADDING EDGE", parent, leaf)
+            #print("ADDING EDGE", parent, leaf)
             #the qbit parent must be already present in the tree
             #sink the parent vertex to the bottom (the last position), if they are different
             if(sink and (self.last != parent)):
@@ -50,36 +50,59 @@ class QTree:
             #self.last = parent
 
         def depth_analysis(self):
-            anal = [None]*len(self.qvertices)
+            anal = {}
             for v in self.qvertices:
-                ph = self.loop.loopify(display=False)[self.qvertices[v].pH.pos]
-                pv = self.loop.loopify(display=False)[self.qvertices[v].pH.pos]
-                if(ph==pv):
+                depth, last = self.loop.loopify(display=False)
+                ph = depth[self.qvertices[v].pH.pos]
+                pv = depth[self.qvertices[v].pV.pos]
+
+                if last[self.qvertices[v].pH.pos] == last[self.qvertices[v].pV.pos]:
                     d = ph
                 else:
                     d = max(ph, pv+1)
 
+
+                d = ph
+
+
                 if d==0:
                     d+=1
+
 
                 #print("vertex:", v, "depth:", d)
                 #print()
 
                 anal[v] = d
-                
+
             return anal
+               
+            
 
         def add_simul(self, parent, leaf, order, depth):
-            if order.index(parent) < len(order)-1:
-                m = depth[order.index(parent)]-1
-                for i in range(order.index(parent)+1, len(order)):
-                    m = max(m, depth[i])
-                    depth[i-1] = m+2
-                    order[i-1] = order[i]
-                order[len(order)-1] = parent
-                depth[len(order)-1] = m+2
-                
-            depth[len(order)-1] += 1
+                    if order.index(parent) < len(order)-1:
+                        m = depth[order.index(parent)]
+                        for i in range(order.index(parent)+1, len(order)):
+                            m = max(m, depth[i]+1)
+                            depth[i-1] = m+1
+                            order[i-1] = order[i]
+                        order[len(order)-1] = parent
+                        depth[len(order)-1] = m+1
 
-            order.append(leaf)
-            depth.append(1)
+                    depth[len(order)-1] += 1
+
+                    order.append(leaf)
+                    depth.append(1)
+
+                    #bellurieee
+                    anal = self.depth_analysis()
+                    anal_sorted = []
+
+                    for i in range(0, len(anal)):
+                        anal_sorted.append(anal[order[i]])
+                    #print("order\t", order)
+                    #print("cdepth\t", anal_sorted)
+                    #print("depth\t", depth)
+
+        def add_overall(self, parent, leaf, order, depth):
+             self.add_edge(parent, leaf)
+             self.add_simul(parent, leaf, order, depth)

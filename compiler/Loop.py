@@ -350,5 +350,5 @@ class Loop(object):
             else:
                 depth[p.pos] = 0
 
-        return depth
+        return depth, last
 
