@@ -1,7 +1,6 @@
 from Graph import *
 from QTree import *
 
-#t = random_tree(30)
 
 
 head = TreeNode(0)
@@ -29,13 +28,10 @@ t.add_edge(7, 18)
 t.add_edge(16, 19)
 
 q = QTree(t.head.value)
-print(build_optimal(t.head, q, q))
-
-
-for v in t.vertices:
-    print(v.value, build_optimal(v, QTree(v.value)))
-
-
+for i in range(1, len(t.vertices)):
+    q.add_edge(t.vertices[i].parent.value, t.vertices[i].value)
+    print("adding vertex: ", t.vertices[i].value)
+    print(q.depth_analysis()[t.vertices[i].parent.value])
 
 #q.loop.loopify()
 #pcvl.pdisplay(q.loop.circuit)

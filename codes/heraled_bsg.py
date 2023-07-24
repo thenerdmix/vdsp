@@ -24,13 +24,13 @@ bsg.add((2,3), symb.BS.H())
 bsg.add((4,5), symb.BS.H())
 bsg.add((6,7), symb.BS.H())
 
-bsg.add((0,1), symb.PERM([1, 0]))
-bsg.add((1,2), symb.PERM([1, 0]))
-bsg.add((0,1), symb.PERM([1, 0]))
+bsg.add((0,1), symb.BS.H(np.pi))
+bsg.add((1,2), symb.BS.H(np.pi))
+bsg.add((0,1), symb.BS.H(np.pi))
 
-bsg.add((4,5), symb.PERM([1, 0]))
-bsg.add((5,6), symb.PERM([1, 0]))
-bsg.add((4,5), symb.PERM([1, 0]))
+bsg.add((4,5), symb.BS.H(np.pi))
+bsg.add((5,6), symb.BS.H(np.pi))
+bsg.add((4,5), symb.BS.H(np.pi))
 
 q0 = Qbit(0, logical=False)
 q1 = Qbit(2, logical=False)
@@ -40,6 +40,7 @@ q3 = Qbit(6, logical=False)
 l = Loop(circuit=bsg, photons=photons_from_qubit([q0, q1, q2, q3]), qbits=[q0, q1, q2, q3])
 l.fuse2(q1, q2)
 
+l.loopify()
 pcvl.pdisplay(l.circuit)
 
 l.calc_in_state()

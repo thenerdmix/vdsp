@@ -201,11 +201,14 @@ def weight(tree, start, reverse):
     
     return max(sons)
 
-def build_optimal(node, qtree):
-    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value)), reverse=False)
+def build_optimal(node, qtree, original):
+    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value), original), reverse=False)
     for c in node.children:
         qtree.add_edge(node.value, c.value)
-        build_optimal(c, qtree)
+        if qtree == original:
+            print("optimal add, adding vertex ", c.value)
+            print(original.depth_analysis()[node.value])
+        build_optimal(c, qtree, original)
     return max(qtree.depth_analysis().values())
 
 class Graph:
