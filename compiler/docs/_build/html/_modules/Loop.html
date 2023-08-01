@@ -292,6 +292,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">qubit</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Photon.other"><a class="viewcode-back" href="../Loop.html#Loop.Photon.other">[docs]</a>    <span class="k">def</span> <span class="nf">other</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If a Photon object corresponds to a logical Qbit, returns the other Photon object corresponding to the same Qbit.</span>
+
+<span class="sd">        :return: Photon object</span>
+<span class="sd">        :rtype: Photon object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">PhotonType</span><span class="o">.</span><span class="n">COMP</span><span class="p">,</span> <span class="s2">&quot;Trying to get the other photon of a non COMP photon&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polarization</span><span class="o">==</span><span class="n">PhotonPolarization</span><span class="o">.</span><span class="n">H</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">qubit</span><span class="o">.</span><span class="n">pV</span>
@@ -301,28 +306,48 @@
             <span class="k">assert</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;Polarization not set properly!&quot;</span></div></div>
 
 <div class="viewcode-block" id="Loop"><a class="viewcode-back" href="../Loop.html#Loop.Loop">[docs]</a><span class="k">class</span> <span class="nc">Loop</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An object that manages a physical photonic circuit.</span>
+<span class="sd">    </span>
+<span class="sd">    :param in_state: the input Fock state</span>
+<span class="sd">    :type in_state: list of int</span>
+<span class="sd">    :param out_state: a list of Fock states to be tested as outputs</span>
+<span class="sd">    :type out_state: list of Fock states</span>
+<span class="sd">    :param circuit: the Perceval circuit</span>
+<span class="sd">    :type circuit: Perceval.Circuit</span>
+<span class="sd">    :param photons: a set of photonic lines</span>
+<span class="sd">    :type photons: a list of Photon objects</span>
+<span class="sd">    :param qbits: a set of logical qbits</span>
+<span class="sd">    :type qbits: a list of Qbit objects</span>
+<span class="sd">    :param nph: number of input photons</span>
+<span class="sd">    :type nph: int</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photons</span><span class="o">=</span><span class="p">[],</span> <span class="n">qbits</span><span class="o">=</span><span class="p">[],</span> <span class="n">circuit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_states</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">photons</span> <span class="o">=</span> <span class="n">photons</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qbits</span> <span class="o">=</span> <span class="n">qbits</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">nph</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">unitaries</span> <span class="o">=</span> <span class="p">[]</span>
-
 <div class="viewcode-block" id="Loop.swap_photons"><a class="viewcode-back" href="../Loop.html#Loop.Loop.swap_photons">[docs]</a>    <span class="k">def</span> <span class="nf">swap_photons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A function to swap thow phonic lines positioned at pos1 and pos2. The must be next to each other.</span>
+
+<span class="sd">        :param pos1: position of the first photonic line</span>
+<span class="sd">        :type pos1: int</span>
+<span class="sd">        :param pos2: position of the second photonic line to swap with the first one</span>
+<span class="sd">        :type pos2: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">pos2</span><span class="o">-</span><span class="n">pos1</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;The two swap positions are not near!!!&quot;</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">photon_from_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">,</span> <span class="n">pos1</span><span class="p">)</span>
         <span class="n">p2</span> <span class="o">=</span> <span class="n">photon_from_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">,</span> <span class="n">pos2</span><span class="p">)</span>
 
+        <span class="c1">#add the swap in the circuit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">p1</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">pos</span><span class="p">),</span> <span class="n">symb</span><span class="o">.</span><span class="n">BS</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">merge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+        <span class="c1">#the two lines must swap type</span>
         <span class="n">p1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">p2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">type</span>
+        <span class="c1">#and out_state if they are of WITNESS type</span>
         <span class="n">p1</span><span class="o">.</span><span class="n">out_state</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">out_state</span> <span class="o">=</span> <span class="n">p2</span><span class="o">.</span><span class="n">out_state</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">out_state</span>
 
         <span class="k">if</span> <span class="n">p1</span><span class="o">.</span><span class="n">qubit</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
@@ -346,6 +371,13 @@
 
 
 <div class="viewcode-block" id="Loop.sink"><a class="viewcode-back" href="../Loop.html#Loop.Loop.sink">[docs]</a>    <span class="k">def</span> <span class="nf">sink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span><span class="n">Qbit</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span><span class="n">Qbit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sink the qubit q1 to the position of qubit q2</span>
+
+<span class="sd">        :param q1:</span>
+<span class="sd">        :type q1: Qbit</span>
+<span class="sd">        :param q2:</span>
+<span class="sd">        :type q2: Qbit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">q1</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">q2</span><span class="o">.</span><span class="n">pV</span><span class="o">.</span><span class="n">pos</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
@@ -356,6 +388,8 @@
 
 
 <div class="viewcode-block" id="Loop.add_bs"><a class="viewcode-back" href="../Loop.html#Loop.Loop.add_bs">[docs]</a>    <span class="k">def</span> <span class="nf">add_bs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bsg&quot;</span><span class="p">,</span> <span class="n">q0_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q1_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a two vertices graph state, creating two qubits q1 and q2 and labelling the two vertices with ids q0_id and q1_id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">pcvl</span><span class="o">.</span><span class="n">Circuit</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">)</span><span class="o">+</span><span class="mi">4</span><span class="p">)</span>
@@ -376,6 +410,8 @@
         <span class="k">return</span> <span class="n">q0</span><span class="p">,</span> <span class="n">q1</span></div>
 
 <div class="viewcode-block" id="Loop.calc_in_state"><a class="viewcode-back" href="../Loop.html#Loop.Loop.calc_in_state">[docs]</a>    <span class="k">def</span> <span class="nf">calc_in_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the input state iterating on all the single photonic lines input state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">in_state</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">in_state</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Photon was not initialized correctly&quot;</span>
@@ -384,7 +420,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">in_state</span> <span class="o">=</span> <span class="n">in_state</span></div>
 
 <div class="viewcode-block" id="Loop.fuse"><a class="viewcode-back" href="../Loop.html#Loop.Loop.fuse">[docs]</a>    <span class="k">def</span> <span class="nf">fuse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span><span class="n">Qbit</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span><span class="n">Qbit</span><span class="p">):</span>
-        <span class="c1">#The first qbit will be witnessed!</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform fusion of type 1 on the qubit q1 and q2, witnessing the qubit q1.</span>
+
+<span class="sd">        :param q1:</span>
+<span class="sd">        :type q1: Qbit</span>
+<span class="sd">        :param q2:</span>
+<span class="sd">        :type q2: Qbit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">q1</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span> <span class="o">&gt;</span> <span class="n">q2</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span>
             <span class="n">pos1</span> <span class="o">=</span> <span class="n">q2</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span>
             <span class="n">pos2</span> <span class="o">=</span> <span class="n">q1</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span>
@@ -407,6 +449,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">qbits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Loop.fuse2"><a class="viewcode-back" href="../Loop.html#Loop.Loop.fuse2">[docs]</a>    <span class="k">def</span> <span class="nf">fuse2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span><span class="n">Qbit</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span><span class="n">Qbit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs fusion of type 2 on qubits q1 and q2.</span>
+
+<span class="sd">        :param q1:</span>
+<span class="sd">        :type q1: Qbit</span>
+<span class="sd">        :param q2:</span>
+<span class="sd">        :type q2: Qbit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">q1</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span> <span class="o">&gt;</span> <span class="n">q2</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span><span class="p">:</span>
             <span class="n">pos1</span> <span class="o">=</span> <span class="n">q2</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span>
             <span class="n">pos2</span> <span class="o">=</span> <span class="n">q1</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span>
@@ -437,6 +486,13 @@
 
         
 <div class="viewcode-block" id="Loop.calc_out_states"><a class="viewcode-back" href="../Loop.html#Loop.Loop.calc_out_states">[docs]</a>    <span class="k">def</span> <span class="nf">calc_out_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logical</span><span class="p">,</span> <span class="n">witness</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate all the possible out states generating all the possibles partitions of nph photons distribuited over the photonic lines.</span>
+
+<span class="sd">        :param logical: add the output state to the list of possible out states only if it corresponds to a logical state.</span>
+<span class="sd">        :type logical: bool</span>
+<span class="sd">        :param witness: add the output state to the list of possible out states only if the WITNESS photons are witnessed accordingly.</span>
+<span class="sd">        :type witness: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">logical</span> <span class="ow">or</span> <span class="n">witness</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nph</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">logical</span><span class="o">=</span><span class="n">logical</span><span class="p">,</span> <span class="n">witness</span><span class="o">=</span><span class="n">witness</span><span class="p">):</span>
@@ -447,6 +503,13 @@
 
 
 <div class="viewcode-block" id="Loop.run"><a class="viewcode-back" href="../Loop.html#Loop.Loop.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">witness</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the amplitudes of the output state.</span>
+
+<span class="sd">        :param logical: if True, checks only logical output states, defaults to True</span>
+<span class="sd">        :type logical: bool, optional</span>
+<span class="sd">        :param witness: _if True, checks only output states where WITNESS photons are witnessed accordingly, defaults to True</span>
+<span class="sd">        :type witness: bool, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calc_out_states</span><span class="p">(</span><span class="n">logical</span><span class="p">,</span> <span class="n">witness</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_states</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_state</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
@@ -455,6 +518,8 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Loop.run_format"><a class="viewcode-back" href="../Loop.html#Loop.Loop.run_format">[docs]</a>    <span class="k">def</span> <span class="nf">run_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Smart function to check only logical output states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_state</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The input state is NONE!&quot;</span><span class="p">)</span>
         <span class="n">product_space</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qbits</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">product_space</span><span class="p">):</span>
@@ -488,11 +553,19 @@
 
 
 <div class="viewcode-block" id="Loop.ampli"><a class="viewcode-back" href="../Loop.html#Loop.Loop.ampli">[docs]</a>    <span class="k">def</span> <span class="nf">ampli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_state</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">out_state</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;Naive&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perceval built-in function to calculate amplitudes&quot;&quot;&quot;</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="n">pcvl</span><span class="o">.</span><span class="n">BackendFactory</span><span class="o">.</span><span class="n">get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
         <span class="n">sim</span> <span class="o">=</span> <span class="n">backend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
         <span class="k">return</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">probampli_be</span><span class="p">(</span><span class="n">input_state</span><span class="o">=</span><span class="n">pcvl</span><span class="o">.</span><span class="n">BasicState</span><span class="p">(</span><span class="n">in_state</span><span class="p">),</span> <span class="n">output_state</span> <span class="o">=</span> <span class="n">pcvl</span><span class="o">.</span><span class="n">BasicState</span><span class="p">(</span><span class="n">out_state</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Loop.loopify"><a class="viewcode-back" href="../Loop.html#Loop.Loop.loopify">[docs]</a>    <span class="k">def</span> <span class="nf">loopify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to rewrite the circuit in a format where the optical elements are divided accordingly to the corresponding outer loop they are performed in.</span>
+
+<span class="sd">        :param display: if True, it adds graphical barriers to the Perceval circuit. It just makes the displaying more clear, defaults to True</span>
+<span class="sd">        :type display: bool, optional</span>
+<span class="sd">        :return: last[i] is the last optical element on the photonic line of index i, depth[i] is the outer loop number corresponding to last[i]</span>
+<span class="sd">        :rtype: list, list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">last</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photons</span><span class="p">)</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">_components</span><span class="p">:</span>
@@ -535,7 +608,6 @@
                 <span class="n">depth</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">return</span> <span class="n">depth</span><span class="p">,</span> <span class="n">last</span></div></div>
-
 </pre></div>
 
            </div>

@@ -121,60 +121,143 @@
 <dt class="sig sig-object py" id="Loop.Loop">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">Loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qbits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An object that manages a physical photonic circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_state</strong> (<em>list</em><em> of </em><em>int</em>) – the input Fock state</p></li>
+<li><p><strong>out_state</strong> (<em>list</em><em> of </em><em>Fock states</em>) – a list of Fock states to be tested as outputs</p></li>
+<li><p><strong>circuit</strong> (<em>Perceval.Circuit</em>) – the Perceval circuit</p></li>
+<li><p><strong>photons</strong> (<em>a list</em><em> of </em><em>Photon objects</em>) – a set of photonic lines</p></li>
+<li><p><strong>qbits</strong> (<em>a list</em><em> of </em><em>Qbit objects</em>) – a set of logical qbits</p></li>
+<li><p><strong>nph</strong> (<em>int</em>) – number of input photons</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.add_bs">
 <span class="sig-name descname"><span class="pre">add_bs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bsg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q0_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q1_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.add_bs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.add_bs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Add a two vertices graph state, creating two qubits q1 and q2 and labelling the two vertices with ids q0_id and q1_id</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.ampli">
 <span class="sig-name descname"><span class="pre">ampli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Naive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.ampli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.ampli" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Perceval built-in function to calculate amplitudes</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.calc_in_state">
 <span class="sig-name descname"><span class="pre">calc_in_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.calc_in_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.calc_in_state" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the input state iterating on all the single photonic lines input state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.calc_out_states">
 <span class="sig-name descname"><span class="pre">calc_out_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.calc_out_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.calc_out_states" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate all the possible out states generating all the possibles partitions of nph photons distribuited over the photonic lines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical</strong> (<em>bool</em>) – add the output state to the list of possible out states only if it corresponds to a logical state.</p></li>
+<li><p><strong>witness</strong> (<em>bool</em>) – add the output state to the list of possible out states only if the WITNESS photons are witnessed accordingly.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.fuse">
 <span class="sig-name descname"><span class="pre">fuse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.fuse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.fuse" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Perform fusion of type 1 on the qubit q1 and q2, witnessing the qubit q1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q1</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+<li><p><strong>q2</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.fuse2">
 <span class="sig-name descname"><span class="pre">fuse2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.fuse2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.fuse2" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Performs fusion of type 2 on qubits q1 and q2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q1</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+<li><p><strong>q2</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.loopify">
 <span class="sig-name descname"><span class="pre">loopify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.loopify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.loopify" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Function to rewrite the circuit in a format where the optical elements are divided accordingly to the corresponding outer loop they are performed in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>display</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, it adds graphical barriers to the Perceval circuit. It just makes the displaying more clear, defaults to True</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>last[i] is the last optical element on the photonic line of index i, depth[i] is the outer loop number corresponding to last[i]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list, list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.run" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Print the amplitudes of the output state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, checks only logical output states, defaults to True</p></li>
+<li><p><strong>witness</strong> (<em>bool</em><em>, </em><em>optional</em>) – _if True, checks only output states where WITNESS photons are witnessed accordingly, defaults to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.run_format">
 <span class="sig-name descname"><span class="pre">run_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.run_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.run_format" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Smart function to check only logical output states.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.sink">
 <span class="sig-name descname"><span class="pre">sink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.sink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.sink" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Sink the qubit q1 to the position of qubit q2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q1</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+<li><p><strong>q2</strong> (<a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><em>Qbit</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Loop.swap_photons">
 <span class="sig-name descname"><span class="pre">swap_photons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.swap_photons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.swap_photons" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A function to swap thow phonic lines positioned at pos1 and pos2. The must be next to each other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos1</strong> (<em>int</em>) – position of the first photonic line</p></li>
+<li><p><strong>pos2</strong> (<em>int</em>) – position of the second photonic line to swap with the first one</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -204,7 +287,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.other">
 <span class="sig-name descname"><span class="pre">other</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.other" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>If a Photon object corresponds to a logical Qbit, returns the other Photon object corresponding to the same Qbit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Photon object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Photon object</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.set_in_state">
