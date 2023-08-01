@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QTree module &mdash; Loop Universal Compiler 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Loop Universal Compiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">QTree module</a><ul>
+<li><a class="reference internal" href="#QTree.QTree"><code class="docutils literal notranslate"><span class="pre">QTree</span></code></a><ul>
+<li><a class="reference internal" href="#QTree.QTree.add_edge"><code class="docutils literal notranslate"><span class="pre">QTree.add_edge()</span></code></a></li>
+<li><a class="reference internal" href="#QTree.QTree.add_overall"><code class="docutils literal notranslate"><span class="pre">QTree.add_overall()</span></code></a></li>
+<li><a class="reference internal" href="#QTree.QTree.add_simul"><code class="docutils literal notranslate"><span class="pre">QTree.add_simul()</span></code></a></li>
+<li><a class="reference internal" href="#QTree.QTree.depth"><code class="docutils literal notranslate"><span class="pre">QTree.depth()</span></code></a></li>
+<li><a class="reference internal" href="#QTree.QTree.sink"><code class="docutils literal notranslate"><span class="pre">QTree.sink()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#QTree.build_optimal"><code class="docutils literal notranslate"><span class="pre">build_optimal()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Loop Universal Compiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">QTree module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/QTree.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-QTree">
+<span id="qtree-module"></span><h1>QTree module<a class="headerlink" href="#module-QTree" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="QTree.QTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">QTree.</span></span><span class="sig-name descname"><span class="pre">QTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A QTree (=Quantum Tree) is made of a normal tree, a Loop object containing the Qubit objects and the circuit of the problem and a map qvertices that map the vertices id to the corresponding Loop.Qbbit object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loop</strong> (<a class="reference internal" href="Loop.html#Loop.Loop" title="Loop.Loop"><em>Loop</em></a>) – the Loop object associated to the Quantum Tree</p></li>
+<li><p><strong>qvertices</strong> (<em>a dictionary where keys are int and values are Loop.Qbit object</em>) – a dictionary that maps the vertices id to the corresponding Qubit objects</p></li>
+<li><p><strong>last</strong> (<em>int</em>) – the id of the last vertex in the photonic circuit</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="QTree.QTree.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree.add_edge" title="Permalink to this definition"></a></dt>
+<dd><p>Add an edge between the qubits with index parent and leaf. The qubit with index leaf will be newly created. The qbit parent must be already present in the tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>int</em>) – index of the parent qubit</p></li>
+<li><p><strong>leaf</strong> (<em>int</em>) – index of the leaf qubit</p></li>
+<li><p><strong>sink</strong> (<em>bool</em><em>, </em><em>optional</em>) – you can decide to perform the fusion with or without sinking the parent qubit to the bottom of the circuit, defaults to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="QTree.QTree.add_overall">
+<span class="sig-name descname"><span class="pre">add_overall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree.add_overall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree.add_overall" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="QTree.QTree.add_simul">
+<span class="sig-name descname"><span class="pre">add_simul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree.add_simul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree.add_simul" title="Permalink to this definition"></a></dt>
+<dd><p>This function simulates algorithmically the growth of the circuit when adding an edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>int</em>) – id of the parent qubit</p></li>
+<li><p><strong>leaf</strong> (<em>int</em>) – id of the leaf qubit</p></li>
+<li><p><strong>order</strong> (<em>list</em><em> of </em><em>int</em>) – a list that keeps the order of the qubit in the photonic circuit (starting from above)</p></li>
+<li><p><strong>depth</strong> (<em>list</em><em> of </em><em>int</em>) – a list recording the depth of every qubit’s lines (as defined above)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="QTree.QTree.depth">
+<span class="sig-name descname"><span class="pre">depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree.depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree.depth" title="Permalink to this definition"></a></dt>
+<dd><p>Given two photonic lines representing a qubit, we can calculate in which outer loop the last optical element on this two lines is positioned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>it returns a list mapping every qubit index to the corresponding outer loop number defined above.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="QTree.QTree.sink">
+<span class="sig-name descname"><span class="pre">sink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">up</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">down</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#QTree.sink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.QTree.sink" title="Permalink to this definition"></a></dt>
+<dd><p>Sink the qubit with integer index up to the position of the qubit with integer position down.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>up</strong> (<em>int</em>) – position of the upper qubit</p></li>
+<li><p><strong>down</strong> (<em>int</em>) – position of the lower qubit</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="QTree.build_optimal">
+<span class="sig-prename descclassname"><span class="pre">QTree.</span></span><span class="sig-name descname"><span class="pre">build_optimal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qtree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/QTree.html#build_optimal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#QTree.build_optimal" title="Permalink to this definition"></a></dt>
+<dd><p>Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex’s children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="Graph.html#Graph.TreeNode" title="Graph.TreeNode"><em>TreeNode</em></a>) – the head of the subtree we are building</p></li>
+<li><p><strong>qtree</strong> (<a class="reference internal" href="#QTree.QTree" title="QTree.QTree"><em>QTree</em></a>) – the QTree object in which we are building the circuit</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the number of outer loops needed to build the subtree with head the TreeNode head. We compute it</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, VDSP.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

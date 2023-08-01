@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loop module &mdash; Loop Universal Compiler 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Loop Universal Compiler
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Loop module</a><ul>
+<li><a class="reference internal" href="#Loop.Loop"><code class="docutils literal notranslate"><span class="pre">Loop</span></code></a><ul>
+<li><a class="reference internal" href="#Loop.Loop.add_bs"><code class="docutils literal notranslate"><span class="pre">Loop.add_bs()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.ampli"><code class="docutils literal notranslate"><span class="pre">Loop.ampli()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.calc_in_state"><code class="docutils literal notranslate"><span class="pre">Loop.calc_in_state()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.calc_out_states"><code class="docutils literal notranslate"><span class="pre">Loop.calc_out_states()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.fuse"><code class="docutils literal notranslate"><span class="pre">Loop.fuse()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.fuse2"><code class="docutils literal notranslate"><span class="pre">Loop.fuse2()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.loopify"><code class="docutils literal notranslate"><span class="pre">Loop.loopify()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.run"><code class="docutils literal notranslate"><span class="pre">Loop.run()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.run_format"><code class="docutils literal notranslate"><span class="pre">Loop.run_format()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.sink"><code class="docutils literal notranslate"><span class="pre">Loop.sink()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Loop.swap_photons"><code class="docutils literal notranslate"><span class="pre">Loop.swap_photons()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Loop.Photon"><code class="docutils literal notranslate"><span class="pre">Photon</span></code></a><ul>
+<li><a class="reference internal" href="#Loop.Photon.newid"><code class="docutils literal notranslate"><span class="pre">Photon.newid</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Photon.other"><code class="docutils literal notranslate"><span class="pre">Photon.other()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Photon.set_in_state"><code class="docutils literal notranslate"><span class="pre">Photon.set_in_state()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Photon.set_pos"><code class="docutils literal notranslate"><span class="pre">Photon.set_pos()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Photon.set_witness"><code class="docutils literal notranslate"><span class="pre">Photon.set_witness()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Loop.PhotonPolarization"><code class="docutils literal notranslate"><span class="pre">PhotonPolarization</span></code></a><ul>
+<li><a class="reference internal" href="#Loop.PhotonPolarization.H"><code class="docutils literal notranslate"><span class="pre">PhotonPolarization.H</span></code></a></li>
+<li><a class="reference internal" href="#Loop.PhotonPolarization.NONE"><code class="docutils literal notranslate"><span class="pre">PhotonPolarization.NONE</span></code></a></li>
+<li><a class="reference internal" href="#Loop.PhotonPolarization.V"><code class="docutils literal notranslate"><span class="pre">PhotonPolarization.V</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Loop.PhotonType"><code class="docutils literal notranslate"><span class="pre">PhotonType</span></code></a><ul>
+<li><a class="reference internal" href="#Loop.PhotonType.COMP"><code class="docutils literal notranslate"><span class="pre">PhotonType.COMP</span></code></a></li>
+<li><a class="reference internal" href="#Loop.PhotonType.NONE"><code class="docutils literal notranslate"><span class="pre">PhotonType.NONE</span></code></a></li>
+<li><a class="reference internal" href="#Loop.PhotonType.WITNESS"><code class="docutils literal notranslate"><span class="pre">PhotonType.WITNESS</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Loop.Qbit"><code class="docutils literal notranslate"><span class="pre">Qbit</span></code></a><ul>
+<li><a class="reference internal" href="#Loop.Qbit.get_photons"><code class="docutils literal notranslate"><span class="pre">Qbit.get_photons()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.Qbit.newid"><code class="docutils literal notranslate"><span class="pre">Qbit.newid</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Loop.check"><code class="docutils literal notranslate"><span class="pre">check()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.format_logical"><code class="docutils literal notranslate"><span class="pre">format_logical()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.partition"><code class="docutils literal notranslate"><span class="pre">partition()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.photon_from_position"><code class="docutils literal notranslate"><span class="pre">photon_from_position()</span></code></a></li>
+<li><a class="reference internal" href="#Loop.photons_from_qubit"><code class="docutils literal notranslate"><span class="pre">photons_from_qubit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Loop Universal Compiler</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Loop module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Loop.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-Loop">
+<span id="loop-module"></span><h1>Loop module<a class="headerlink" href="#module-Loop" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="Loop.Loop">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">Loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qbits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.add_bs">
+<span class="sig-name descname"><span class="pre">add_bs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bsg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q0_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q1_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.add_bs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.add_bs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.ampli">
+<span class="sig-name descname"><span class="pre">ampli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Naive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.ampli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.ampli" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.calc_in_state">
+<span class="sig-name descname"><span class="pre">calc_in_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.calc_in_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.calc_in_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.calc_out_states">
+<span class="sig-name descname"><span class="pre">calc_out_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.calc_out_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.calc_out_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.fuse">
+<span class="sig-name descname"><span class="pre">fuse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.fuse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.fuse" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.fuse2">
+<span class="sig-name descname"><span class="pre">fuse2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.fuse2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.fuse2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.loopify">
+<span class="sig-name descname"><span class="pre">loopify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.loopify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.loopify" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.run_format">
+<span class="sig-name descname"><span class="pre">run_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.run_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.run_format" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.sink">
+<span class="sig-name descname"><span class="pre">sink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.Qbit" title="Loop.Qbit"><span class="pre">Qbit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.sink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.sink" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Loop.swap_photons">
+<span class="sig-name descname"><span class="pre">swap_photons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Loop.swap_photons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Loop.swap_photons" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Loop.Photon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">Photon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#Loop.PhotonType" title="Loop.PhotonType"><span class="pre">PhotonType</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.Photon.newid">
+<span class="sig-name descname"><span class="pre">newid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">count(0)</span></em><a class="headerlink" href="#Loop.Photon.newid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Photon.other">
+<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.other" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Photon.set_in_state">
+<span class="sig-name descname"><span class="pre">set_in_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.set_in_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.set_in_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Photon.set_pos">
+<span class="sig-name descname"><span class="pre">set_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.set_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.set_pos" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Photon.set_witness">
+<span class="sig-name descname"><span class="pre">set_witness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.set_witness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.set_witness" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Loop.PhotonPolarization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">PhotonPolarization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#PhotonPolarization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.PhotonPolarization" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Photons of type COMP in the dual rail enconding can either correspond to the Horizontal or Vertical polarization in the polarization enconding.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonPolarization.H">
+<span class="sig-name descname"><span class="pre">H</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'H'</span></em><a class="headerlink" href="#Loop.PhotonPolarization.H" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonPolarization.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'99'</span></em><a class="headerlink" href="#Loop.PhotonPolarization.NONE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonPolarization.V">
+<span class="sig-name descname"><span class="pre">V</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'V'</span></em><a class="headerlink" href="#Loop.PhotonPolarization.V" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Loop.PhotonType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">PhotonType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#PhotonType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.PhotonType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>There are three possible types of photons. 1) Photons that belong to a qubit (COMPutational photons), 2) Photons that will be witnessed (WITNESS), 3) Everything else.
+Photons of type COMP will always have a corresponding Qubit object and a corresponding polariation Horizontal or Vertical.
+Photon of type WITNESS will always have a out_state.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonType.COMP">
+<span class="sig-name descname"><span class="pre">COMP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COMP'</span></em><a class="headerlink" href="#Loop.PhotonType.COMP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonType.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'99'</span></em><a class="headerlink" href="#Loop.PhotonType.NONE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.PhotonType.WITNESS">
+<span class="sig-name descname"><span class="pre">WITNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WITNESS'</span></em><a class="headerlink" href="#Loop.PhotonType.WITNESS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="Loop.Qbit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">Qbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Qbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Qbit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Loop.Qbit.get_photons">
+<span class="sig-name descname"><span class="pre">get_photons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Qbit.get_photons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Qbit.get_photons" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Loop.Qbit.newid">
+<span class="sig-name descname"><span class="pre">newid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">count(0)</span></em><a class="headerlink" href="#Loop.Qbit.newid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Loop.check">
+<span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">witness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.check" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a string of 0s and 1s o corresponds to a logical string and/or the photons of type witness are witnessed correctly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>photons</strong> (<em>list</em><em> of </em><a class="reference internal" href="#Loop.Photon" title="Loop.Photon"><em>Photon</em></a>) – list of photons to check</p></li>
+<li><p><strong>o</strong> (<em>list</em><em> of </em><em>int</em>) – the string of 0s and 1s to check</p></li>
+<li><p><strong>logical</strong> (<em>bool</em><em>, </em><em>optional</em>) – decide to check if the string is logical or not, defaults to True</p></li>
+<li><p><strong>witness</strong> (<em>bool</em><em>, </em><em>optional</em>) – decide to check if the photons of type witness must be checked or not, defaults to True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>return True if the string o corresponds to the dual rail enconding of the list photons</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Loop.format_logical">
+<span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">format_logical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qbits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#format_logical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.format_logical" title="Permalink to this definition"></a></dt>
+<dd><p>Given a set of qubits and a state state, it returns a dictionary mapping every qubit to the corresponding logical state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qbits</strong> (<em>list</em><em> of </em><em>Qubit</em>) – list of qubits</p></li>
+<li><p><strong>state</strong> (<em>list</em><em> of </em><em>int</em>) – a Fock state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a dictionary mapping every qubit to False or True</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Loop.partition">
+<span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.partition" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of all the possible partitions of m elements in n bins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – number of bins</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – number of elements to partition</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of all the possible partitions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Loop.photon_from_position">
+<span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">photon_from_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#photon_from_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.photon_from_position" title="Permalink to this definition"></a></dt>
+<dd><p>Return the photon with position pos in a list of photons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>photons</strong> (<em>list</em><em> of </em><a class="reference internal" href="#Loop.Photon" title="Loop.Photon"><em>Photon</em></a>) – list of photons</p></li>
+<li><p><strong>pos</strong> (<em>int</em>) – position of the photon in the photonic circuit</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>photon in position pos</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#Loop.Photon" title="Loop.Photon">Photon</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Loop.photons_from_qubit">
+<span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">photons_from_qubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qbits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#photons_from_qubit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.photons_from_qubit" title="Permalink to this definition"></a></dt>
+<dd><p>Given a list of qubits, return the list of corresponding photons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qbits</strong> (<em>list</em><em> of </em><em>Qubit</em>) – list of qubits</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of photons</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#Loop.Photon" title="Loop.Photon">Photon</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, VDSP.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

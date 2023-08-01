@@ -14,3 +14,5 @@ compiler/testing/*
 
 .*
 !.gitignore
+!.github
+
