@@ -8,7 +8,19 @@ from Circuits import *
 from enum import Enum
 
 def check(photons, o, logical=True, witness=True):
-    #postprocessing the input doesn't use the concept of qubit, I just iterate over the photons
+    """Check if a string of 0s and 1s o corresponds to a logical string and/or the photons of type witness are witnessed correctly.
+
+    :param photons: list of photons to check
+    :type photons: list of Photon
+    :param o: the string of 0s and 1s to check
+    :type o: list of int
+    :param logical: decide to check if the string is logical or not, defaults to True
+    :type logical: bool, optional
+    :param witness: decide to check if the photons of type witness must be checked or not, defaults to True
+    :type witness: bool, optional
+    :return: return True if the string o corresponds to the dual rail enconding of the list photons
+    :rtype: bool
+    """
     b = True
     for p in photons:
         if b == False:
@@ -23,6 +35,15 @@ def check(photons, o, logical=True, witness=True):
     return b
 
 def partition(n, m):
+    """Return a list of all the possible partitions of m elements in n bins.
+
+    :param n: number of bins
+    :type n: int
+    :param m: number of elements to partition
+    :type m: int
+    :return: list of all the possible partitions
+    :rtype: list of list
+    """
     result = []
 
     def backtrack(curr_list, remaining_sum, remaining_length):
@@ -39,6 +60,15 @@ def partition(n, m):
     return result
 
 def format_logical(qbits, state):
+    """Given a set of qubits and a state state, it returns a dictionary mapping every qubit to the corresponding logical state.
+
+    :param qbits: list of qubits
+    :type qbits: list of Qubit
+    :param state: a Fock state
+    :type state: list of int
+    :return: a dictionary mapping every qubit to False or True
+    :rtype: dict
+    """
     res = {}
     for q in qbits:
         if(state[q.pH.pos]==1 and state[q.pV.pos]==0):
@@ -51,18 +81,37 @@ def format_logical(qbits, state):
     return res
 
 def photons_from_qubit(qbits):
+    """Given a list of qubits, return the list of corresponding photons.
+
+    :param qbits: list of qubits
+    :type qbits: list of Qubit
+    :return: list of photons
+    :rtype: list of Photon
+    """
     photons = []
     for q in qbits:
         photons += q.get_photons()
     return photons
 
 def photon_from_position(photons, pos):
+    """Return the photon with position pos in a list of photons.
+
+    :param photons: list of photons
+    :type photons: list of Photon
+    :param pos: position of the photon in the photonic circuit
+    :type pos: int
+    :return: photon in position pos
+    :rtype: Photon
+    """
     for p in photons:
         if p.pos == pos:
             return p
 
-
 class PhotonType(Enum):
+    """There are three possible types of photons. 1) Photons that belong to a qubit (COMPutational photons), 2) Photons that will be witnessed (WITNESS), 3) Everything else.
+    Photons of type COMP will always have a corresponding Qubit object and a corresponding polariation Horizontal or Vertical.
+    Photon of type WITNESS will always have a out_state.
+    """
     COMP = "COMP"
     WITNESS = "WITNESS"
     NONE = "99"
@@ -72,6 +121,8 @@ class PhotonType(Enum):
 
 
 class PhotonPolarization(Enum):
+    """Photons of type COMP in the dual rail enconding can either correspond to the Horizontal or Vertical polarization in the polarization enconding.
+    """
     H = "H"
     V = "V"
     NONE = "99"

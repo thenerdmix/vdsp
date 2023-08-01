@@ -8,5 +8,9 @@ __pycache__/
 *.synctex.gz
 *.toc
 compiler/QASMBench/*
+
+codes/*
+compiler/testing/*
+
 .*
 !.gitignore
