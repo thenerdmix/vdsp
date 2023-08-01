@@ -129,9 +129,23 @@ class PhotonPolarization(Enum):
 
 
 class Qbit(object):
+    """The Qbit object represents a logical qubit. A logical qubit in the dual rail encoding is just the set of tho photons: one of polarization Horizontal and the other of polarization Vertical.
+
+    :param pH: the horizontal Photon object
+    :type object: Photon
+    :param pV: the vertical Photon object. Its default position in the photonic circuit is just the position of the horizontally polarized photon +1.
+    :type object: Photon
+    """
     newid = itertools.count()
 
     def __init__(self, pos, logical=False):
+        """Constructor method.
+
+        :param pos: the position of the horizontally polarized photon.
+        :type pos: int
+        :param logical: the logical value of the qubit, defaults to False
+        :type logical: bool, optional
+        """
         self.pH = Photon(type=PhotonType.COMP)
         self.pH.pos = pos
 
@@ -152,10 +166,31 @@ class Qbit(object):
         self.pV.qubit = self
 
     def get_photons(self):
+        """Returns the two photons corresponding to the logical qubit.
+
+        :return: a list of two photons
+        :rtype: list of Photon objects
+        """
         return [self.pH, self.pV]
 
 class Photon(object):
     newid = itertools.count()
+    """A photonic line.
+
+    :param id: the id of the photon
+    :type id: int
+    :param pos: the position of the photon in the photonic circuit. By default the position is initialized as the photon id.
+    :type pos: int
+    :param type: the photon can be a computational or a witness photon
+    :type type: PhotonType
+    :param in_state: how many photons there are in this specific photonic line as input
+    :type in_state: int
+    :param out_state: if this line must be witnessed, how many photons I expect to observe in this specific line.
+    :type out_state: int
+    :param qubit: if this line is computational, the Qbit object corresponding to this photonic line
+    :type qubit: Qbit object
+    :param polarization: if this line is computational, it can correspond either to an horizontally polarized photon or a vertical polarized one.
+    """
 
     def __init__(self, type:PhotonType):
         self.id = next(Photon.newid)
@@ -168,12 +203,22 @@ class Photon(object):
         self.polarization = None
 
     def set_in_state(self, in_state):
+        """Set the in state of the circuit. It must be a Fock state represented by the in_state list.
+
+        :param in_state: a list of int representing how many photons there are in each photonic line.
+        :type in_state: list of int
+        """
         self.in_state = in_state
 
     def set_pos(self, pos):
         self.pos = pos
 
     def set_witness(self, out_state):
+        """Set a specific photonic line to be witnessed, with expected number of photons equal to out_state.
+
+        :param out_state: how many photons must be witnessed in this specific line.
+        :type out_state: int
+        """
         self.type = PhotonType.WITNESS
         self.out_state =  out_state
         self.qubit = None
