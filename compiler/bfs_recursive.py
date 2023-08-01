@@ -29,7 +29,7 @@ t.add_edge(7, 18)
 t.add_edge(16, 19)
 
 q = QTree(t.head.value)
-print(build_optimal(t.head, q, q))
+print(build_optimal(t.head, q))
 
 
 for v in t.vertices:
@@ -39,4 +39,7 @@ for v in t.vertices:
 
 #q.loop.loopify()
 #pcvl.pdisplay(q.loop.circuit)
+
+q.loop.calc_in_state()
+print(q.loop.run_format_smart())
 

@@ -5,7 +5,7 @@ import sympy as sp
 
 from Loop import *
 
-n = 2
+n = 7
 photons = n*2
 circ = pcvl.Circuit(photons, name='GHZ')
 qbits = [Qbit(2*i, logical=False) for i in range(n)]

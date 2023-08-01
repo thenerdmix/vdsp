@@ -65,7 +65,6 @@ def photon_from_position(photons, pos):
 class PhotonType(Enum):
     COMP = "COMP"
     WITNESS = "WITNESS"
-    SOL = "SOL"
     NONE = "99"
 
     def __str__(self):
@@ -292,8 +291,28 @@ class Loop(object):
                 print(p)
 
     def run_format(self):
-        self.calc_out_states(True, True)
-        for o in self.out_states:
+        assert self.in_state != None, print("The input state is NONE!")
+        product_space = [[True, False]]*len(self.qbits)
+        for element in itertools.product(*product_space):
+            o = [None]*len(self.photons)
+            for p in self.photons:
+                if p.type == PhotonType.WITNESS:
+                    o[p.pos] = p.out_state
+                elif p.type == PhotonType.COMP:
+                    index = self.qbits.index(p.qubit)
+                    if element[index] == True:
+                        if p.polarization == PhotonPolarization.H:
+                            o[p.pos] = 0
+                        elif p.polarization == PhotonPolarization.V:
+                            o[p.pos] = 1
+                    elif element[index] == False:
+                        if p.polarization == PhotonPolarization.H:
+                            o[p.pos] = 1
+                        elif p.polarization == PhotonPolarization.V:
+                            o[p.pos] = 0
+                else:
+                    assert False, print("Some photon is still of NONE type...")
+
             p = self.ampli(self.in_state, o)
             if(abs(p) > 10e-10):
                 dic = format_logical(self.qbits, o)
@@ -302,6 +321,7 @@ class Loop(object):
                     print(key, dic[key], end=" ")
                 print()
                 print(p)
+
 
     def ampli(self, in_state = [], out_state = [], backend="Naive"):
         backend = pcvl.BackendFactory.get_backend(backend)
