@@ -63,7 +63,7 @@ def format_logical(qbits, state):
     """Given a set of qubits and a state state, it returns a dictionary mapping every qubit to the corresponding logical state.
 
     :param qbits: list of qubits
-    :type qbits: list of Qubit
+    :type qbits: list of Qbit
     :param state: a Fock state
     :type state: list of int
     :return: a dictionary mapping every qubit to False or True
@@ -84,7 +84,7 @@ def photons_from_qubit(qbits):
     """Given a list of qubits, return the list of corresponding photons.
 
     :param qbits: list of qubits
-    :type qbits: list of Qubit
+    :type qbits: list of Qbit
     :return: list of photons
     :rtype: list of Photon
     """
@@ -109,7 +109,7 @@ def photon_from_position(photons, pos):
 
 class PhotonType(Enum):
     """There are three possible types of photons. 1) Photons that belong to a qubit (COMPutational photons), 2) Photons that will be witnessed (WITNESS), 3) Everything else.
-    Photons of type COMP will always have a corresponding Qubit object and a corresponding polariation Horizontal or Vertical.
+    Photons of type COMP will always have a corresponding Qbit object and a corresponding polariation Horizontal or Vertical.
     Photon of type WITNESS will always have a out_state.
     """
     COMP = "COMP"
