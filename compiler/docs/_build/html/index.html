@@ -72,6 +72,13 @@
              
   <section id="welcome-to-loop-universal-compiler-s-documentation">
 <h1>Welcome to Loop Universal Compiler’s documentation!<a class="headerlink" href="#welcome-to-loop-universal-compiler-s-documentation" title="Permalink to this heading"></a></h1>
+<p>The basic idea is to generate tree-like graph states, starting from the intuition presented in <a class="reference external" href="https://github.com/thenerdmix/vdsp/blob/main/proof/main.pdf">here</a>, where we also present a formal proof of why the euristic strategy we are using is working.</p>
+<p>The implementation is based on three different modules:</p>
+<ul class="simple">
+<li><p>The <strong>Loop</strong> module manages the actual physical photonic circuit.</p></li>
+<li><p>The <strong>Graph</strong> module the creation and extraction of classical graphs and trees.</p></li>
+<li><p>The <strong>Quantum Tree</strong> module maps a classical graph to the corresponding quantum graph state and his physical implementation.</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 </div>
 </section>
