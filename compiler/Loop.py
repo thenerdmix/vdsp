@@ -345,6 +345,7 @@ class Loop(object):
         """Calculate the input state iterating on all the single photonic lines input state.
         """
         in_state = [None]*len(self.photons)
+        self.nph = 0
         for p in self.photons:
                 assert p.in_state != None, "Photon was not initialized correctly"
                 in_state[p.pos] = p.in_state
@@ -425,6 +426,7 @@ class Loop(object):
         :param witness: add the output state to the list of possible out states only if the WITNESS photons are witnessed accordingly.
         :type witness: bool
         """
+        self.out_states = []
         if logical or witness:
             for l in partition(self.nph, len(self.photons)):
                 if check(self.photons, l, logical=logical, witness=witness):
