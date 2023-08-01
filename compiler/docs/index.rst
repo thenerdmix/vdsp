@@ -15,6 +15,8 @@ The implementation is based on three different modules:
 
 * The **Quantum Tree** module maps a classical graph to the corresponding quantum graph state and his physical implementation.
 
+This project is the fruit of a two month internship in June and July 2023 promoted by the VDSP and the Walther group in Wien.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
