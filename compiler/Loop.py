@@ -224,6 +224,11 @@ class Photon(object):
         self.qubit = None
 
     def other(self):
+        """If a Photon object corresponds to a logical Qbit, returns the other Photon object corresponding to the same Qbit.
+
+        :return: Photon object
+        :rtype: Photon object
+        """
         assert self.type == PhotonType.COMP, "Trying to get the other photon of a non COMP photon"
         if self.polarization==PhotonPolarization.H:
             return self.qubit.pV
@@ -233,28 +238,48 @@ class Photon(object):
             assert True, "Polarization not set properly!"
 
 class Loop(object):
+    """An object that manages a physical photonic circuit.
+    
+    :param in_state: the input Fock state
+    :type in_state: list of int
+    :param out_state: a list of Fock states to be tested as outputs
+    :type out_state: list of Fock states
+    :param circuit: the Perceval circuit
+    :type circuit: Perceval.Circuit
+    :param photons: a set of photonic lines
+    :type photons: a list of Photon objects
+    :param qbits: a set of logical qbits
+    :type qbits: a list of Qbit objects
+    :param nph: number of input photons
+    :type nph: int
 
+    """
     def __init__(self, photons=[], qbits=[], circuit=None):
         self.in_state = None
         self.out_states = []
-
         self.circuit = circuit
-
         self.photons = photons
         self.qbits = qbits
-
         self.nph = 0
 
-        self.unitaries = []
-
     def swap_photons(self, pos1, pos2):
+        """A function to swap thow phonic lines positioned at pos1 and pos2. The must be next to each other.
+
+        :param pos1: position of the first photonic line
+        :type pos1: int
+        :param pos2: position of the second photonic line to swap with the first one
+        :type pos2: int
+        """
         assert pos2-pos1==1, "The two swap positions are not near!!!"
         p1 = photon_from_position(self.photons, pos1)
         p2 = photon_from_position(self.photons, pos2)
 
+        #add the swap in the circuit
         self.circuit.add((p1.pos, p2.pos), symb.BS.H(np.pi), merge=True)
 
+        #the two lines must swap type
         p1.type, p2.type = p2.type, p1.type
+        #and out_state if they are of WITNESS type
         p1.out_state, p2.out_state = p2.out_state, p1.out_state
 
         if p1.qubit != None:
@@ -278,6 +303,13 @@ class Loop(object):
 
 
     def sink(self, q1:Qbit, q2:Qbit):
+        """Sink the qubit q1 to the position of qubit q2
+
+        :param q1:
+        :type q1: Qbit
+        :param q2:
+        :type q2: Qbit
+        """
         start = q1.pH.pos
         end = q2.pV.pos
         for i in range(start, end):
@@ -288,6 +320,8 @@ class Loop(object):
 
 
     def add_bs(self, name="bsg", q0_id = None, q1_id = None):
+        """Add a two vertices graph state, creating two qubits q1 and q2 and labelling the two vertices with ids q0_id and q1_id
+        """
         if self.circuit != None:
             temp = self.circuit
             self.circuit = pcvl.Circuit(len(self.photons)+4)
@@ -308,6 +342,8 @@ class Loop(object):
         return q0, q1
 
     def calc_in_state(self):
+        """Calculate the input state iterating on all the single photonic lines input state.
+        """
         in_state = [None]*len(self.photons)
         for p in self.photons:
                 assert p.in_state != None, "Photon was not initialized correctly"
@@ -316,7 +352,13 @@ class Loop(object):
         self.in_state = in_state
 
     def fuse(self, q1:Qbit, q2:Qbit):
-        #The first qbit will be witnessed!
+        """Perform fusion of type 1 on the qubit q1 and q2, witnessing the qubit q1.
+
+        :param q1:
+        :type q1: Qbit
+        :param q2:
+        :type q2: Qbit
+        """
         if q1.pH.pos > q2.pH.pos:
             pos1 = q2.pH.pos
             pos2 = q1.pH.pos
@@ -339,6 +381,13 @@ class Loop(object):
         self.qbits.remove(q1)
 
     def fuse2(self, q1:Qbit, q2:Qbit):
+        """Performs fusion of type 2 on qubits q1 and q2.
+
+        :param q1:
+        :type q1: Qbit
+        :param q2:
+        :type q2: Qbit
+        """
         if q1.pH.pos > q2.pH.pos:
             pos1 = q2.pH.pos
             pos2 = q1.pH.pos
@@ -369,6 +418,13 @@ class Loop(object):
 
         
     def calc_out_states(self, logical, witness):
+        """Calculate all the possible out states generating all the possibles partitions of nph photons distribuited over the photonic lines.
+
+        :param logical: add the output state to the list of possible out states only if it corresponds to a logical state.
+        :type logical: bool
+        :param witness: add the output state to the list of possible out states only if the WITNESS photons are witnessed accordingly.
+        :type witness: bool
+        """
         if logical or witness:
             for l in partition(self.nph, len(self.photons)):
                 if check(self.photons, l, logical=logical, witness=witness):
@@ -379,6 +435,13 @@ class Loop(object):
 
 
     def run(self, logical=True, witness=True):
+        """Print the amplitudes of the output state.
+
+        :param logical: if True, checks only logical output states, defaults to True
+        :type logical: bool, optional
+        :param witness: _if True, checks only output states where WITNESS photons are witnessed accordingly, defaults to True
+        :type witness: bool, optional
+        """
         self.calc_out_states(logical, witness)
         for o in self.out_states:
             p = self.ampli(self.in_state, o)
@@ -387,6 +450,8 @@ class Loop(object):
                 print(p)
 
     def run_format(self):
+        """Smart function to check only logical output states.
+        """
         assert self.in_state != None, print("The input state is NONE!")
         product_space = [[True, False]]*len(self.qbits)
         for element in itertools.product(*product_space):
@@ -420,11 +485,19 @@ class Loop(object):
 
 
     def ampli(self, in_state = [], out_state = [], backend="Naive"):
+        """Perceval built-in function to calculate amplitudes"""
         backend = pcvl.BackendFactory.get_backend(backend)
         sim = backend(self.circuit)
         return(sim.probampli_be(input_state=pcvl.BasicState(in_state), output_state = pcvl.BasicState(out_state)))
 
     def loopify(self, display = True):
+        """Function to rewrite the circuit in a format where the optical elements are divided accordingly to the corresponding outer loop they are performed in.
+
+        :param display: if True, it adds graphical barriers to the Perceval circuit. It just makes the displaying more clear, defaults to True
+        :type display: bool, optional
+        :return: last[i] is the last optical element on the photonic line of index i, depth[i] is the outer loop number corresponding to last[i]
+        :rtype: list, list
+        """
         last = [None]*len(self.photons)
         loop = {}
         for u in self.circuit._components:
@@ -467,4 +540,3 @@ class Loop(object):
                 depth[p.pos] = 0
 
         return depth, last
-
