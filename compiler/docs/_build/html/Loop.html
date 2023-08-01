@@ -185,7 +185,21 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="Loop.Photon.newid">
 <span class="sig-name descname"><span class="pre">newid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">count(0)</span></em><a class="headerlink" href="#Loop.Photon.newid" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A photonic line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>int</em>) – the id of the photon</p></li>
+<li><p><strong>pos</strong> (<em>int</em>) – the position of the photon in the photonic circuit. By default the position is initialized as the photon id.</p></li>
+<li><p><strong>type</strong> (<a class="reference internal" href="#Loop.PhotonType" title="Loop.PhotonType"><em>PhotonType</em></a>) – the photon can be a computational or a witness photon</p></li>
+<li><p><strong>in_state</strong> (<em>int</em>) – how many photons there are in this specific photonic line as input</p></li>
+<li><p><strong>out_state</strong> (<em>int</em>) – if this line must be witnessed, how many photons I expect to observe in this specific line.</p></li>
+<li><p><strong>qubit</strong> (<em>Qbit object</em>) – if this line is computational, the Qbit object corresponding to this photonic line</p></li>
+<li><p><strong>polarization</strong> – if this line is computational, it can correspond either to an horizontally polarized photon or a vertical polarized one.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.other">
@@ -195,7 +209,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.set_in_state">
 <span class="sig-name descname"><span class="pre">set_in_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.set_in_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.set_in_state" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set the in state of the circuit. It must be a Fock state represented by the in_state list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>in_state</strong> (<em>list</em><em> of </em><em>int</em>) – a list of int representing how many photons there are in each photonic line.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.set_pos">
@@ -205,7 +225,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Photon.set_witness">
 <span class="sig-name descname"><span class="pre">set_witness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Photon.set_witness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Photon.set_witness" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set a specific photonic line to be witnessed, with expected number of photons equal to out_state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out_state</strong> (<em>int</em>) – how many photons must be witnessed in this specific line.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -259,10 +285,28 @@ Photon of type WITNESS will always have a out_state.</p>
 <dt class="sig sig-object py" id="Loop.Qbit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Loop.</span></span><span class="sig-name descname"><span class="pre">Qbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Qbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Qbit" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Qbit object represents a logical qubit. A logical qubit in the dual rail encoding is just the set of tho photons: one of polarization Horizontal and the other of polarization Vertical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pH</strong> – the horizontal Photon object</p></li>
+<li><p><strong>pV</strong> – the vertical Photon object. Its default position in the photonic circuit is just the position of the horizontally polarized photon +1.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="Loop.Qbit.get_photons">
 <span class="sig-name descname"><span class="pre">get_photons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Loop.html#Qbit.get_photons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Loop.Qbit.get_photons" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the two photons corresponding to the logical qubit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a list of two photons</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of Photon objects</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="Loop.Qbit.newid">

@@ -197,9 +197,23 @@
 
 
 <div class="viewcode-block" id="Qbit"><a class="viewcode-back" href="../Loop.html#Loop.Qbit">[docs]</a><span class="k">class</span> <span class="nc">Qbit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Qbit object represents a logical qubit. A logical qubit in the dual rail encoding is just the set of tho photons: one of polarization Horizontal and the other of polarization Vertical.</span>
+
+<span class="sd">    :param pH: the horizontal Photon object</span>
+<span class="sd">    :type object: Photon</span>
+<span class="sd">    :param pV: the vertical Photon object. Its default position in the photonic circuit is just the position of the horizontally polarized photon +1.</span>
+<span class="sd">    :type object: Photon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">newid</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor method.</span>
+
+<span class="sd">        :param pos: the position of the horizontally polarized photon.</span>
+<span class="sd">        :type pos: int</span>
+<span class="sd">        :param logical: the logical value of the qubit, defaults to False</span>
+<span class="sd">        :type logical: bool, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pH</span> <span class="o">=</span> <span class="n">Photon</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">PhotonType</span><span class="o">.</span><span class="n">COMP</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pH</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span>
 
@@ -220,10 +234,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pV</span><span class="o">.</span><span class="n">qubit</span> <span class="o">=</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="Qbit.get_photons"><a class="viewcode-back" href="../Loop.html#Loop.Qbit.get_photons">[docs]</a>    <span class="k">def</span> <span class="nf">get_photons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the two photons corresponding to the logical qubit.</span>
+
+<span class="sd">        :return: a list of two photons</span>
+<span class="sd">        :rtype: list of Photon objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pV</span><span class="p">]</span></div></div>
 
 <div class="viewcode-block" id="Photon"><a class="viewcode-back" href="../Loop.html#Loop.Photon">[docs]</a><span class="k">class</span> <span class="nc">Photon</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">newid</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A photonic line.</span>
+
+<span class="sd">    :param id: the id of the photon</span>
+<span class="sd">    :type id: int</span>
+<span class="sd">    :param pos: the position of the photon in the photonic circuit. By default the position is initialized as the photon id.</span>
+<span class="sd">    :type pos: int</span>
+<span class="sd">    :param type: the photon can be a computational or a witness photon</span>
+<span class="sd">    :type type: PhotonType</span>
+<span class="sd">    :param in_state: how many photons there are in this specific photonic line as input</span>
+<span class="sd">    :type in_state: int</span>
+<span class="sd">    :param out_state: if this line must be witnessed, how many photons I expect to observe in this specific line.</span>
+<span class="sd">    :type out_state: int</span>
+<span class="sd">    :param qubit: if this line is computational, the Qbit object corresponding to this photonic line</span>
+<span class="sd">    :type qubit: Qbit object</span>
+<span class="sd">    :param polarization: if this line is computational, it can correspond either to an horizontally polarized photon or a vertical polarized one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span><span class="n">PhotonType</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">Photon</span><span class="o">.</span><span class="n">newid</span><span class="p">)</span>
@@ -236,12 +271,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">polarization</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Photon.set_in_state"><a class="viewcode-back" href="../Loop.html#Loop.Photon.set_in_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_in_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the in state of the circuit. It must be a Fock state represented by the in_state list.</span>
+
+<span class="sd">        :param in_state: a list of int representing how many photons there are in each photonic line.</span>
+<span class="sd">        :type in_state: list of int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_state</span> <span class="o">=</span> <span class="n">in_state</span></div>
 
 <div class="viewcode-block" id="Photon.set_pos"><a class="viewcode-back" href="../Loop.html#Loop.Photon.set_pos">[docs]</a>    <span class="k">def</span> <span class="nf">set_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span></div>
 
 <div class="viewcode-block" id="Photon.set_witness"><a class="viewcode-back" href="../Loop.html#Loop.Photon.set_witness">[docs]</a>    <span class="k">def</span> <span class="nf">set_witness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a specific photonic line to be witnessed, with expected number of photons equal to out_state.</span>
+
+<span class="sd">        :param out_state: how many photons must be witnessed in this specific line.</span>
+<span class="sd">        :type out_state: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">PhotonType</span><span class="o">.</span><span class="n">WITNESS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_state</span> <span class="o">=</span>  <span class="n">out_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qubit</span> <span class="o">=</span> <span class="kc">None</span></div>
