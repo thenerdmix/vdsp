@@ -5,7 +5,8 @@
 
 Welcome to Loop Universal Compiler's documentation!
 ===================================================
-
+The basic idea is to generate tree-like graph states, starting from the intuition presented in
+:ref:'ciao'.
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
