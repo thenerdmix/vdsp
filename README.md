@@ -1,6 +1,6 @@
 # A Universal Compiler for the Loop Architecture
 ## Documentation
-The documentation can be found [here](https://thenerdmix.github.io/vdsp/).
+The documentation can be found [here](https://thenerdmix.github.io/vdsp/genindex.html).
 ## Example notebooks
 There are five different example notebooks to play around with.
 * [Generation of two vertices graph state in a post selected way](https://github.com/thenerdmix/vdsp/blob/main/compiler/post_selected_resource_generation.ipynb)
