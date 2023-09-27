@@ -4,6 +4,7 @@ from Graph import *
 import perceval as pcvl
 import perceval.components as symb
 
+
 def build_optimal(node, qtree):
     """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
 
@@ -85,35 +86,33 @@ class QTree:
 
         self.loop.fuse(qlost, self.qvertices[parent])
 
-    def depth(self):
-        """Given two photonic lines representing a qubit, we can calculate in which outer loop the last optical element on this two lines is positioned.
+    def cdepth(self):
+        """Given two photonic lines representing a qubit, we can calculate in which outer loop the last optical element on this two lines is positioned (cdepth = calculated depth).
 
         :return: it returns a list mapping every qubit index to the corresponding outer loop number defined above.
         :rtype: int
         """
-        anal = {}
+        cdepth = {}
         for v in self.qvertices:
             depth, last = self.loop.loopify(display=False)
             ph = depth[self.qvertices[v].pH.pos]
             pv = depth[self.qvertices[v].pV.pos]
 
-            if last[self.qvertices[v].pH.pos] == last[self.qvertices[v].pV.pos]:
-                d = ph
-            else:
-                d = max(ph, pv+1)
+            assert(ph == pv)
 
             d = ph
 
             if d==0:
                 d+=1
 
-            anal[v] = d
+            cdepth[v] = d
 
-        return anal
+        return cdepth
            
 
 ### this last two functions are not really useful. I used them to prove the correctness of the algorithm describing how the number of loops grows.
     def add_simul(self, parent, leaf, order, depth):
+        text_file = open("./compiler/output.txt", "a")
         """This function simulates algorithmically the growth of the circuit when adding an edge.
 
         :param parent: id of the parent qubit
@@ -139,14 +138,15 @@ class QTree:
         order.append(leaf)
         depth.append(1)
 
-        anal = self.depth()
-        anal_sorted = []
+        cdepth = self.cdepth()
+        cdepth_sorted = []
 
-        for i in range(0, len(anal)):
-            anal_sorted.append(anal[order[i]])
-        #print("order\t", order)
-        #print("cdepth\t", anal_sorted)
-        #print("depth\t", depth)
+        for i in range(0, len(depth)):
+            cdepth_sorted.append(cdepth[order[i]])
+        print(parent, "→",leaf, file=text_file)
+        print(*order, sep="\t", file=text_file)
+        print(*depth, sep="\t", file=text_file)
+        text_file.close()
 
     def add_overall(self, parent, leaf, order, depth):
         self.add_edge(parent, leaf)
