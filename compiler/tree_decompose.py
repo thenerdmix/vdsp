@@ -1,5 +1,6 @@
 from pyzx.graph.base import BaseGraph, VT
 from pyzx.graph.graph_s import GraphS
+from pyzx.simplify import to_gh, spider_simp
 from pyzx.drawing import draw
 from pyzx.utils import VertexType, EdgeType
 from typing import Set, List
@@ -197,7 +198,7 @@ def simple_decomposition_cunningham(g: BaseGraph, s1: Set[VT], s2: Set[VT]):
     qubit_average /= len(border1)
     row_average /= len(border1)
     # new vertices:
-    v1 = g.add_vertex(qubit=qubit_average, row=row_average+0.5)
+    v1 = g.add_vertex(VertexType.X, qubit=qubit_average, row=row_average+0.5)
     
     #edge contraction
 
@@ -303,7 +304,10 @@ def check_proposition_5(g1: BaseGraph, g2: BaseGraph, v: Set[VT]):
     return False
 
 def prime_decomposition(g: BaseGraph):
-    root = g.vertex_set().pop()
+    try:
+        root = g.vertex_set().pop()
+    except:
+        return []
     sp_tree = generate_spanning_tree(g, root)
     return prime_decomposition_helper(g, sp_tree)
 
@@ -386,9 +390,61 @@ def is_correct(g: BaseGraph):
         return g.type(v) == VertexType.Z
     return False
 
-def local_complement(g: BaseGraph, v: VT):
-    print("lc on ",v)
-    vn = list(g.neighbors(v))
+
+def get_all_marked_neighbors(g: BaseGraph, v: VT):
+    marked_vertices = [vertex for vertex in g.neighbors(v) if g.type(v) == VertexType.X]
+    res = marked_vertices.copy()
+    while marked_vertices:
+        marked_vertex = marked_vertices.pop()
+        for neighbor in g.neighbors(marked_vertex):
+            if not neighbor in res:
+                marked_vertices.append(neighbor)
+                res.append(neighbor)
+
+    return res
+
+# def get_adjacent_split_sets(g: BaseGraph, v: VT, splits):
+#     marked_neighbors = get_all_marked_neighbors(g, v)
+#     marked_sets = []
+#     for split in splits:
+#         for marked_neighbor in marked_neighbors:
+#             if marked_neighbor in split and not v in split:
+#                 marked_sets.append(split)
+#                 break
+    
+#     return marked_sets
+
+def get_adjacent_split_sets(g: BaseGraph, splits, lc_vertex: VT, closed):
+    marked_vertices = [vertex for vertex in g.neighbors(lc_vertex) if g.type(vertex)==VertexType.X and not vertex in closed]
+    res = []
+    for marked_vertex in marked_vertices:
+        for split in splits:
+            if marked_vertex in split and not lc_vertex in split:
+                res.append((marked_vertex,split))
+                break
+
+    return res
+
+def local_complement(g: BaseGraph, lc_vertex, splits):
+    print("lc on ",lc_vertex)
+    complement_neighbors(g, list(g.neighbors(lc_vertex)))
+    closed = [lc_vertex]
+    candidates = set([lc_vertex])
+    while candidates:
+        candidate = candidates.pop()
+        for marked_vertex, split_set in get_adjacent_split_sets(g, splits, candidate, closed):
+            print("rec lc on ",marked_vertex)
+            complement_neighbors(g, list(set(g.neighbors(marked_vertex)).intersection(split_set)))
+            closed.append(marked_vertex)
+            candidates.add(marked_vertex)
+    
+    draw(g, labels=True)
+
+# def rec_lcomp_helper(g: BaseGraph, splits, marked_vertex, split_set):
+#     complement_neighbors(g, split_set.difference(set([marked_vertex])))
+
+
+def complement_neighbors(g: BaseGraph, vn: List[VT]):
     vn.sort()
     for n in vn:
         # flip edges
@@ -397,49 +453,120 @@ def local_complement(g: BaseGraph, v: VT):
                 g.remove_edge(g.edge(n,n2))
             else:
                 g.add_edge(g.edge(n,n2), EdgeType.HADAMARD)
+
+# def local_complement(g: BaseGraph, v: VT, splits):
+#     print("lc on ",v)
+#     vn = list(g.neighbors(v))
+#     complement_neighbors(g, vn)
     
-    # special lcomp for neighbors which are marked vertices
-    marked_vertices = [vertex for vertex in vn if g.type(vertex) == VertexType.BOUNDARY]
-    for marked_vertex in marked_vertices:
-        #recursive step
-        lcomp_marked_vertex(g, marked_vertex, set(vn).union(set([v])))
+#     # special lcomp for neighbors which are marked vertices
+#     for split_set in get_adjacent_split_sets(g, v, splits):
+#         complement_neighbors(g, split_set)
+#     # marked_vertices = [vertex for vertex in vn if g.type(vertex) == VertexType.X]
+#     # for marked_vertex in marked_vertices:
+#     #     #recursive step
+#     #     lcomp_marked_vertex(g, marked_vertex, set(vn).union(set([v])))
 
-    draw(g, labels=True)
+#     draw(g, labels=True)
 
-def lcomp_marked_vertex(g: BaseGraph, mv: VT, closed: Set[VT]):
-    complement_neighbors = list(set(g.neighbors(mv)).difference(closed))
-    complement_neighbors.sort()
-    for n in complement_neighbors:
-        # flip edges
-        for n2 in complement_neighbors[complement_neighbors.index(n)+1:]:
-            if g.connected(n,n2):
-                g.remove_edge(g.edge(n,n2))
-            else:
-                g.add_edge(g.edge(n,n2), EdgeType.HADAMARD)
+# def lcomp_marked_vertex(g: BaseGraph, mv: VT, closed: Set[VT]):
+#     print("lcomp recursion on",mv, closed)
+#     complement_neighbors = list(set(g.neighbors(mv)).difference(closed))
+#     # complement_neighbors = [vertex for vertex in split_set_neighbors if g.type(vertex) != VertexType.X]
+#     complement_neighbors.sort()
+#     for n in complement_neighbors:
+#         # flip edges
+#         for n2 in complement_neighbors[complement_neighbors.index(n)+1:]:
+#             if g.connected(n,n2):
+#                 g.remove_edge(g.edge(n,n2))
+#             else:
+#                 g.add_edge(g.edge(n,n2), EdgeType.HADAMARD)
 
-    marked_vertices = [vertex for vertex in complement_neighbors if g.type(vertex) == VertexType.BOUNDARY]
-    for marked_vertex in marked_vertices:
-        lcomp_marked_vertex(g, marked_vertex, set(complement_neighbors).union(set([mv])))
+#     marked_vertices = [vertex for vertex in complement_neighbors if g.type(vertex) == VertexType.X and not vertex in closed]
+#     for marked_vertex in marked_vertices:
+#         lcomp_marked_vertex(g, marked_vertex, set(complement_neighbors).union(set([mv])).union(closed))
 
 # given the standard decomposition of a totally decomposable graph, 
 # this brings the graph into a tree structure using a series of local complementation
 def correct_components(g: BaseGraph, splits: List[Set[VT]]):
+    complementations = []
     for component in splits:
-        print("component",component)
+        # print("component",component)
         subgraph = get_subgraph(g, component)
         if is_correct(subgraph):
             continue 
         if is_complete(subgraph):
             v = [vertex for vertex in component if g.type(vertex) == VertexType.Z][0]
-            local_complement(g, v)
+            complementations.append(v)
+            local_complement(g, v, splits)
             #This is no normal complement, we have to consider which vertices are adjacent in the original graph
         elif is_star(subgraph):
             m = get_star_center(subgraph)
             neighbor_component = [c for c in splits if c != component and m in c][0]
             nv = [vertex for vertex in neighbor_component if g.type(vertex) == VertexType.Z][0]
-            local_complement(g, nv)
+            complementations.append(nv)
+            local_complement(g, nv, splits)
             v = [vertex for vertex in component if g.type(vertex) == VertexType.Z][0]
-            local_complement(g, v)
+            complementations.append(v)
+            local_complement(g, v, splits)
         else:
-            print("This should not happen, is the graph is lc equivalent to a tree and the decomposition canonical?")
+            # print("component",component,"is not correctable")
+            continue
+    return complementations
+            # print("This should not happen, is the graph is lc equivalent to a tree and the decomposition canonical?")
+
+def to_gl(g: BaseGraph):
+    g1 = g.clone()
+    to_gh(g1)
+    spider_simp(g1, quiet=True)
+    return g1
+    #disentangle outputs
     
+
+# converts a graph like diagram to a tree if possible
+def graph_like_to_tree(g: BaseGraph):
+    minputs = [list(g.neighbors(input))[0] for input in g.inputs()]
+    moutputs = [list(g.neighbors(output))[0] for output in g.outputs()]
+    g1 = g.clone()
+    g1.remove_vertices(set(g.inputs()).union(set(g.outputs())))
+    splits = standard_decomposition(g1)
+    # TODO: This does not implement the quantum computing local complementation with phase updates in the spiders and changes of measurement planes!
+    complementations = correct_components(g1, splits)
+    recompose_graph(g1, splits)
+    inputs = []
+    for minput in minputs:
+        input = g1.add_vertex()
+        g1.add_edge(g1.edge(input, minput))
+        inputs.append(input)
+    g1.set_inputs(inputs)
+
+    outputs = []
+    for moutput in moutputs:
+        output = g1.add_vertex()
+        g1.add_edge(g1.edge(moutput, output))
+        outputs.append(output)
+    g1.set_outputs(outputs)
+
+    return (g1,complementations)
+
+def recompose_graph(g: BaseGraph, splits: List[Set]):
+    if len(splits) < 2:
+        return
+    for idx in range(0,len(splits)):
+        for idx2 in range(0, len(splits)):
+            if idx == idx2:
+                continue
+            v = splits[idx].intersection(splits[idx2])
+            if len(v) == 1:
+                v = v.pop()
+                if v in g.vertices():
+                    border1 = set(list(g.neighbors(v))).intersection(splits[idx])
+                    border2 = set(list(g.neighbors(v))).intersection(splits[idx2])
+                    if len(border1) > 1 and len(border2) > 1:
+                        import pdb
+                        pdb.set_trace()     
+                    g.remove_vertex(v)
+                    for vertex1 in border1: 
+                        for vertex2 in border2: 
+                            g.add_edge(g.edge(vertex1, vertex2), EdgeType.HADAMARD)
+
