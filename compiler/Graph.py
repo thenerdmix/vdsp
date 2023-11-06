@@ -264,7 +264,7 @@ class Graph:
 
     def complement(self, v):
         """applies local complementation on the pyzx graph; updates phases and measurement types
-        g: A MBQCGraph instance
+        g: A Graph instance (with initizialized measurements)
         v: The vertex to complement
         """
         g = self.graph
