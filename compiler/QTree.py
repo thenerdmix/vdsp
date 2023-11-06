@@ -1,9 +1,32 @@
 from Loop import *
 from Graph import *
+from pyzx.utils import VertexType, EdgeType
 
 import perceval as pcvl
 import perceval.components as symb
 
+def get_optimal_tree(g: Graph):
+    optimal_tree = None
+    optimal_outer_loops = -1
+    for v in g.graph.vertices():
+        t = create_tree_dfs(g.graph, list(g.graph.vertices())[v])
+        q = QTree(t.head.value)
+        current_loops = build_optimal(t.head,q)
+        if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:
+            optimal_outer_loops = current_loops
+            optimal_tree = t
+    return (optimal_tree, optimal_outer_loops)
+
+def get_graph_cost_params(g: Graph):
+    res = {}
+    res['num_vertices'] = len([vertex for vertex in g.graph.vertices() if g.graph.type(vertex) == VertexType.Z])
+    tree, num_outer_loops = get_optimal_tree(g)
+    py_tree(g.graph, tree)
+    res['num_bell_ps'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.SIMPLE])
+    res['num_bell_h'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.HADAMARD])
+    res['num_outer_loops'] = num_outer_loops
+    res['num_inner_loops'] = g.graph.num_vertices() #for now
+    return res
 
 def build_optimal(node, qtree):
     """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.

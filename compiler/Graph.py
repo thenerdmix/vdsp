@@ -1,5 +1,8 @@
 import pyzx as zx
 import random
+from typing import Literal, Final
+from pyzx.utils import VertexType, EdgeType
+from fractions import Fraction
 
 def to_graph_like(g):
     """Puts a generic ZX-graph into a ZX graph-like diagram.
@@ -223,6 +226,7 @@ class Graph:
         """
         self.original_graph = None
         self.graph = None
+        self.measurements = dict()
 
     def construct_from_json(self, graph_json):
         """Generate the ZX graph-like diagram from a json. It also optimize it.
@@ -241,3 +245,95 @@ class Graph:
         g.remove_vertices(g.inputs()+g.outputs())
 
         self.graph = g.copy()
+    
+    def init_measurements(self):
+        """Initializes gflow measurement planes (XY,XZ,YZ) from the pyzx graph
+        """
+        g = self.graph
+        for v in g.vertices():
+            neighbors = g.neighbors(v)
+            if len(neighbors) == 1:
+                self.measurements[v] = MeasurementType.EFFECT
+                self.measurements[neighbors[0]] = MeasurementType.YZ
+        for v in g.vertices():
+            if not self.measurements[v]:
+                self.measurements[v] = MeasurementType.XY
+
+    def mneighbors(self, vertex):
+        return [n for n in self.graph.neighbors(vertex) if self.measurements[n] != MeasurementType.EFFECT and self.graph.type(n) != VertexType.BOUNDARY]
+
+    def complement(self, v):
+        """applies local complementation on the pyzx graph; updates phases and measurement types
+        g: A Graph instance (with initizialized measurements)
+        v: The vertex to complement
+        """
+        g = self.graph
+        vn = list(self.mneighbors(v))
+        if g.type(v) != VertexType.Z or self.measurements[v] == MeasurementType.EFFECT or any([n for n in g.neighbors(v) if g.type(n) != VertexType.Z]):
+            #TODO: push phase on boundary instead
+            return False
+        vn.sort()
+
+        for n in vn:
+            # flip edges
+            for n2 in vn[vn.index(n)+1:]:
+                if g.connected(n,n2):
+                    g.remove_edge(g.edge(n,n2))
+                else:
+                    g.add_edge(g.edge(n,n2), EdgeType.HADAMARD)
+            
+            #update neighbors
+            if self.measurements[v] == MeasurementType.XZ and g.phase(v) == Fraction(3,2):
+                g.add_to_phase(n,Fraction(1,2))
+            else:
+                g.add_to_phase(n,-Fraction(1,2))
+            self.measurements[n] = {
+                MeasurementType.YZ: MeasurementType.XZ,
+                MeasurementType.XZ: MeasurementType.YZ,
+            }.get(self.measurements[n], MeasurementType.XY)
+        
+        #update vertex
+        phase_to_add = -Fraction(1,2)
+
+        if self.measurements[v] == MeasurementType.XZ and g.phase(v) == Fraction(3,2):
+            phase_to_add = Fraction(1,2)
+
+        elif self.measurements[v] == MeasurementType.YZ and g.phase(v) == 0:
+            phase_to_add = Fraction(1,2)
+
+        if self.measurements[v] == MeasurementType.XY:
+            #create effect spider
+            newv = g.add_vertex(VertexType.Z, -1, g.row(v), g.phase(v) + phase_to_add)
+            g.add_edge(g.edge(v, newv), EdgeType.HADAMARD)
+            self.measurements[newv] = MeasurementType.EFFECT
+            g.set_phase(v, Fraction(1,2))
+            g.set_phase(newv, -g.phase(newv))
+        
+        elif self.measurements[v] == MeasurementType.XZ:
+            # remove effect spider
+            g.set_phase(v, g.phase(g.effect(v))+phase_to_add)
+            g.remove_vertex(g.effect(v))
+        
+        elif self.measurements[v] == MeasurementType.YZ: 
+            g.set_phase(g.effect(v), g.phase(g.effect(v))+phase_to_add)
+
+        #set new measurement plane/axis
+        self.measurements[v] = {
+            MeasurementType.XY: MeasurementType.XZ,
+            MeasurementType.XZ: MeasurementType.XY,
+        }.get(g.mtype(v), MeasurementType.YZ)
+
+        return True
+
+
+
+class MeasurementType:
+    """Measurement Type of a Z spider in a graph-like diagram"""
+    Type = Literal[0,1,2,3,4,5]
+    XY: Final = 0
+    XZ: Final = 1
+    YZ: Final = 2
+    X: Final = 3
+    Y: Final = 4
+    Z: Final = 5
+    EFFECT: Final = 6 #spider does not have a measurement plane but is part of an XZ or YZ measurement, i.e. the upper part of phase gadget
