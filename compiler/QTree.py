@@ -42,7 +42,7 @@ def build_optimal(node, qtree):
     for c in node.children:
         qtree.add_edge(node.value, c.value)
         build_optimal(c, qtree)
-    return max(qtree.depth().values())
+    return max(qtree.cdepth().values())
 
 class QTree:
     """A QTree (=Quantum Tree) is made of a normal tree, a Loop object containing the Qubit objects and the circuit of the problem and a map qvertices that map the vertices id to the corresponding Loop.Qbbit object.
