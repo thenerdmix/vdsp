@@ -419,6 +419,60 @@ class Loop(object):
         self.qbits.remove(q1)
         self.qbits.remove(q2)
     
+    def fuse75_generic(self, q1: Qbit, q2: Qbit):
+        #assumes for each qubit the 0 mode (pH) is before the 1 (pV) and the two qubits are not intertwined
+        newsize = self.circuit.m+4
+        new_circ = pcvl.Circuit(m=newsize, name=self.circuit.name)
+        new_circ.add(0,self.circuit)
+        self.circuit = new_circ
+        if q1.pH.pos < q2.pH.pos:
+            aPos = q1.pH.pos
+            bPos = q1.pV.pos
+            cPos = q2.pH.pos
+            dPos = q2.pV.pos
+        else:
+            aPos = q2.pH.pos
+            bPos = q2.pV.pos
+            cPos = q1.pH.pos
+            dPos = q1.pV.pos
+        print("positions A",aPos,"B",bPos,"C",cPos,"D",dPos)
+        #outer loop 1
+        print("sink B",bPos,"to D",dPos-1)
+        for i in range(bPos, dPos-1): #sink B
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        self.circuit.add((dPos-1,dPos), symb.BS.H()) #interact BD
+        print("sink B",dPos,"to ancillas",newsize-5)
+        for i in range(dPos, newsize-5): #sink B
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        self.circuit.add((newsize-4,newsize-3), symb.BS.H()) #generate 20 02 states
+        self.circuit.add((newsize-2,newsize-1), symb.BS.H())
+        #outer loop 2
+        print("sink A",aPos,"to C",cPos-2)
+        for i in range(aPos, cPos-2): #sink A
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        self.circuit.add((cPos-2,cPos-1), symb.BS.H()) #interact AC
+        for i in range(cPos-1, newsize-6): #sink A
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        for i in range(newsize-5, newsize-2): #sink B
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        #outer loop 3
+        for i in range(dPos-2, newsize-7): #sink D
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        for i in range(newsize-6, newsize-4): #sink A
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True)
+        #outer loop 4
+        for i in range(cPos-2, newsize-8): #sink C
+            self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True) 
+        self.circuit.add((i, i+1), symb.BS.H(np.pi), merge=True) #sink A
+        #outer loop 5
+        for i in range(newsize-8, newsize-2, 2):
+            self.circuit.add((i,i+1), symb.BS.H()) #interact with ancillas
+        
+        # return new_circ
+        
+
+
+
     def fuse_2_75(self, q1:Qbit, q2:Qbit, a1: Qbit, a2: Qbit):
         #assuming q1 and q2 are next to each other as are ancilla1 and ancilla2
         posq1 = q1.pH.pos

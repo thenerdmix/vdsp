@@ -15,6 +15,8 @@ def get_optimal_tree(g: Graph):
         if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:
             optimal_outer_loops = current_loops
             optimal_tree = t
+    import pdb
+    pdb.set_trace()
     return (optimal_tree, optimal_outer_loops)
 
 def get_graph_cost_params(g: Graph):
@@ -43,6 +45,9 @@ def build_optimal(node, qtree):
         qtree.add_edge(node.value, c.value)
         build_optimal(c, qtree)
     return max(qtree.cdepth().values())
+
+## perceval.pdisplay(qtree.loop.circuit).save_svg('test3gs')
+
 
 class QTree:
     """A QTree (=Quantum Tree) is made of a normal tree, a Loop object containing the Qubit objects and the circuit of the problem and a map qvertices that map the vertices id to the corresponding Loop.Qbbit object.
@@ -85,6 +90,19 @@ class QTree:
         q_down = self.qvertices[down]
 
         self.loop.sink(q_up, q_down) 
+    
+    def add_heralded_edge(self, vertex1, vertex2, sink=True):
+        # fuse vertex1 with ancilla, fuse vertex2 with ancilla and fuse2 both ancillas? 
+        # so is it possible to just call add_edge twice and fuse2? 
+
+        ancilla1 = TreeNode(self.last+1)
+        ancilla2 = TreeNode(self.last+2)
+        self.last += 2 # not sure??
+        self.add_edge(vertex1, ancilla1)
+        self.add_edge(vertex2, ancilla2)
+        self.loop.fuse2(vertex1, vertex2) 
+
+        
 
     def add_edge(self, parent, leaf, sink=True):
         """Add an edge between the qubits with index parent and leaf. The qubit with index leaf will be newly created. The qbit parent must be already present in the tree.
