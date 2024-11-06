@@ -45,8 +45,9 @@ Can we remove any edge or does edge removal for a k-1 vertex lead to cycle break
 Edge addition and removal inside a component preserves connectedness, therefore we always get a cycle when connecting two other components afterwards?
 """
 
-def approximate_min_deg_st(G):
-    T = nx.minimum_spanning_tree(G)
+def approximate_min_deg_st(G, T=None):
+    if not T:
+        T = nx.minimum_spanning_tree(G)
     while True: 
         k = max(dict(T.degree).values())
         marks = dict({node:'good' if T.degree(node) < k-1 else 'bad' for node in T.nodes})
