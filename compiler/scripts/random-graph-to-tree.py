@@ -10,6 +10,11 @@ import networkx as nx
 import random
 import json
 
+"""
+In this script we generate random erdös renyi graphs and extract dfs spanning trees iterating through all vertices in the graph as root
+We analyze the number of outer loops and dump the trees in json format for further processing (i.e.: calculation of first passage time)
+"""
+
 
 def create_random_graph(num_vertices, edge_prob):
     random_graph = nx.erdos_renyi_graph(num_vertices,edge_prob)
@@ -33,6 +38,31 @@ def dump_tree(tree, filename):
     with open(filename, 'w') as f:
         json.dump(tree_dict, f)
 
+def dump_tree2(tree, filename):
+    """same as dump_tree but we change the indexing, so that vertex 0 is always root 
+    this is later needed for first passage time calculation where 0 is always the vertex to start the fusion from
+    yet still not optimal, because in first passage time calculation we cannot yet fix a specific fusion order"""
+    conv_map = dict({tree.head.value: 0})
+    queue = [tree.head]
+    counter = 1
+    # convert tree indexing so that root is element 0
+    while queue:
+        current_node = queue.pop()
+        for child in reversed(current_node.children):
+            conv_map[child.value] = counter
+            counter += 1
+            queue.append(child)
+    
+    tree_dict = dict()
+    for v in tree.vertices:
+        neighbors = v.children + [v.parent]
+        tree_dict[conv_map[v.value]] = [conv_map[neighbor.value] for neighbor in neighbors if neighbor]
+    print(tree_dict)
+    with open(filename, 'w') as f:
+        json.dump(tree_dict, f)
+            
+
+
 def get_optimal_tree(g: BaseGraph[VT,ET]):
     optimal_tree = None
     optimal_outer_loops = -1
@@ -45,13 +75,24 @@ def get_optimal_tree(g: BaseGraph[VT,ET]):
             optimal_tree = t
     return (optimal_tree, optimal_outer_loops)
 
+def get_all_dfs_trees(g: BaseGraph[VT,ET]):
+    dfs_trees = []
+    for v in g.vertices():
+        t = create_tree_dfs(g, list(g.vertices())[v])
+        q = QTree(t.head.value)
+        current_loops = build_optimal(t.head,q)
+        dfs_trees.append((t,current_loops))
+    return dfs_trees
+
 if __name__ == "__main__":
-    g = create_random_graph(12,0.4)
+    random.seed(1234)
+    g = create_random_graph(11,0.4)
     print("original graph with",g.num_edges(),"edges")
     minimize_edges(g)
     print("after edge minimzer",g.num_edges(),"edges")
-    optimal_tree, num_outer_loops = get_optimal_tree(g)
-    print("partition into tree with",len(optimal_tree.vertices)-1,"edges and remaining graph with",g.num_edges()-len(optimal_tree.vertices)+1,"edges")
-    print("tree has max degree of",max(map(lambda x: len(x.children)+1 if x != optimal_tree.head else len(x.children), optimal_tree.vertices)))
-    print("tree has number of outer loops",num_outer_loops)
-    dump_tree(optimal_tree, 'tree.json')
+    for idx, (tree, num_outer_loops) in enumerate(get_all_dfs_trees(g)):
+        print("tree",idx,"has max degree of",max(map(lambda x: len(x.children)+1 if x != tree.head else len(x.children), tree.vertices)))
+        print("tree",idx,"has number of outer loops",num_outer_loops)
+        print("tree head is",tree.head.value)
+        # dump_tree(tree, 'trees/tree'+str(idx)+'.json')
+        dump_tree2(tree, 'trees/tree'+str(idx)+'.json')
