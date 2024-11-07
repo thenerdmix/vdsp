@@ -1,4 +1,4 @@
-from QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal
+from compiler.QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal
 from graphtheory.approximate_min_deg_st import approximate_min_deg_st
 import networkx as nx
 import random

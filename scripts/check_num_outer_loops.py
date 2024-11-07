@@ -1,5 +1,5 @@
-from QTree import QTree, build_optimal
-from Graph import Tree, TreeNode
+from compiler.QTree import QTree, build_optimal
+from compiler.Graph import Tree, TreeNode
 import json
 import sys
 
