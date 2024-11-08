@@ -13,11 +13,6 @@
 
 using namespace std;
 
-
-// const int nodes = 10;
-// const int edges = nodes - 1;
-
-
 void generate_edge_labels(map<pair<int,int>, int> &edge_labels,map<int, pair<int,int>> &label_to_edge, vector<vector<int>> &a){
 	int idx = 1;
 	for(int i = 0; i < a.size(); i++){
@@ -49,41 +44,24 @@ int get_idx(vector<int> state){
 	return result;
 }
 
-// void write_to_file(char (&matrix), int nodes){
-// 	ofstream file;
-// 	file.open("matrix.txt");
-// 	for(int i = 0; i < (1<<(nodes-1)); i++){
-// 		for(int j = 0; j < (1<<(nodes-1)); j++){
-// 			file<<matrix[i][j]<<" ";
-// 		}
-// 		file<<endl;
-// 	}
-// 	return;
-// }
-
-
-int main(int argc, char *argv[]){//all of this is for Type I fusion
-	
-	
+int main(int argc, char *argv[]){
 	vector<pair<int,int> >target_tree;
-	
 	map<pair<int,int>, bool> edge_present;
 	map<pair<int,int>, int> edge_labels;
 	map<int, pair<int,int>> label_to_edge;
 	
 
-	
-	// define tree
-	// a[0] = {1,2}; a[1] = {0,3,4,5}; a[2] = {0,6}; a[3] = {1,7,8,9}; a[4] = {1}; a[5] = {1}; a[6] = {2,10,11}; a[7] = {3}; a[8] = {3}; a[9] = {3}; a[10] = {6}; a[11] = {6};
-	
-	//read in tree json
-	std::ifstream ifs(argv[1]);
+	////////////////////////////
+	//  Load graph from json  //
+	////////////////////////////
+
+	std::ifstream ifs("inp.json");
 	auto jsonData = nlohmann::json::parse(ifs);
 	
 	int nodes = jsonData.size();
 	int edges = nodes - 1;
 
-	char matrix[(1<<(nodes-1))][(1<<(nodes-1))];
+	char matrix[3*(1<<(nodes-1))][3*(1<<(nodes-1))];
 	
 	vector<vector<int>> a(nodes);
 
@@ -91,17 +69,15 @@ int main(int argc, char *argv[]){//all of this is for Type I fusion
         int intKey = std::stoi(key);  // Convert string key to int
         a[intKey] = vector<int>(value); // Insert into the map
     }
-	//line
-	// a[0] = {1};
-	// a[nodes-1] = {nodes-2};
-	// for(int i = 1; i < nodes-1; i++) a[i] = {i-1,i+1};
-	
+
 	generate_edge_labels(edge_labels,label_to_edge, a);//run from 1...nodes
+
 	////////////////////
 	//  Create Matrix //
 	////////////////////
-	for(int i = 0; i < (1<<(nodes-1)); i++){
-		for(int j = 0; j < (1<<(nodes-1)); j++){
+
+	for(int i = 0; i < 3*(1<<(nodes-1)); i++){
+		for(int j = 0; j < 3*(1<<(nodes-1)); j++){
 			matrix[i][j] = '0';
 		}
 	}
@@ -109,43 +85,75 @@ int main(int argc, char *argv[]){//all of this is for Type I fusion
 		vector<int> state = get_state(i, nodes);
 		vector<int> state_copy = state;
 
-		//this part contains the core of the instructions to build the tree
-		//there are many other options, we have to discuss this further
 
 		for(int j = 0; j < state.size(); j++){
-			state_copy = state;
-			if (state_copy[j] == 1) continue;
-			
-			//in case of success
-			state_copy[j] = 1;
-			int idx = get_idx(state_copy);
-			matrix[idx][i] = 'p';
+			if (state[j] == 1) continue;
 			state_copy = state;
 			
-
-			//in case of failure, the edge stays zero and the neighboring edges all become zero
 			int node_1 = label_to_edge[j+1].first;
 			int node_2 = label_to_edge[j+1].second;
-			//set also neighboring edges to 0
-			for(auto nn : a[node_1]){
-				// cout<<node_1<<" "<<nn<<" "<<edge_labels[{node_1,nn}]<<endl;
-				state_copy[edge_labels[{node_1,nn}]-1] = 0;
+			if(a[node_1].size()==1 || a[node_2].size()==1){// node_1 or node_2 are leaf
+				state_copy[j] = 1;
+				int idx = get_idx(state_copy);
+				state_copy = state;
+				//success
+				matrix[3*idx][3*i] = 'p';
+
+				//failure
+				for(auto nn : a[node_1]){
+					state_copy[edge_labels[{node_1,nn}]-1] = 0;
+				}
+				for(auto nn : a[node_2]){
+					state_copy[edge_labels[{node_1,nn}]-1] = 0;
+				}
+				idx = get_idx(state_copy);
+				state_copy = state;
+				matrix[3*idx][3*i] = 'q';
+				break;
 			}
-			for(auto nn : a[node_2]){
-				state_copy[edge_labels[{node_2,nn}]-1] = 0;
+			else{
+				//success happens in three steps
+
+				state_copy[j] = 1;
+				int idx = get_idx(state_copy);
+				state_copy = state;
+
+				matrix[3*i+1][3*i] = 'p';
+				matrix[3*i+2][3*i+1] = 'p';
+				matrix[3*idx][3*i+2] = 'p';
+
+				//in case of failure from state 3*i, only node_1's edges gets reset
+				// int node_1 = label_to_edge[j+1].first;
+				for(auto nn : a[node_1]){
+					// cout<<node_1<<" "<<nn<<" "<<edge_labels[{node_1,nn}]<<endl;
+					state_copy[edge_labels[{node_1,nn}]-1] = 0;
+				}
+				idx = get_idx(state_copy);
+				state_copy = state;
+				matrix[3*idx][3*i] = 'q';
+
+				//in case of failure from state 3*i+1, we go back to 3*i
+				matrix[3*i][3*i+1] = 'q';
+				
+				//in case of failure from state 3*i+2, only node_2's edges gets reset
+				// int node_2 = label_to_edge[j+1].second;
+				for(auto nn : a[node_2]){
+					state_copy[edge_labels[{node_2,nn}]-1] = 0;
+				}
+				idx = get_idx(state_copy);
+				matrix[3*idx][3*i+2] = 'q';
+				break;
 			}
-			idx = get_idx(state_copy);
-			matrix[idx][i] = 'q';
-			break;
 		}
 	}
-	cout<<(1<<(nodes-1))-1<<endl;
-	matrix[(1<<(nodes-1))-1][(1<<(nodes-1))-1] = '1';
-	// write_to_file(matrix, nodes);
+	matrix[3*(1<<(nodes-1))-1][3*(1<<(nodes-1))-1] = '1';
+	matrix[3*(1<<(nodes-1))-2][3*(1<<(nodes-1))-2] = '1';
+	matrix[3*(1<<(nodes-1))-3][3*(1<<(nodes-1))-3] = '1';
+
 	ofstream file;
 	file.open("matrix.txt");
-	for(int i = 0; i < (1<<(nodes-1)); i++){
-		for(int j = 0; j < (1<<(nodes-1)); j++){
+	for(int i = 0; i < 3*(1<<(nodes-1)); i++){
+		for(int j = 0; j < 3*(1<<(nodes-1)); j++){
 			file<<matrix[i][j]<<" ";
 		}
 		file<<endl;
@@ -153,3 +161,6 @@ int main(int argc, char *argv[]){//all of this is for Type I fusion
 	
 	return 0;
 }
+
+
+//g++ -std=c++17 -I/Users/billyjay/Documents/Programming/libs/JSON/ tree.cpp
