@@ -117,7 +117,7 @@ class Tree:
         """Constructor method
         """
         self.head = head
-        self.vertices = []
+        self.vertices = [head]
 
     def add_edge(self, parent, children):
         """Add an edge to the tree. The parent vertex must be already present in the tree. The children vertex is a newly created TreeNode.
@@ -138,6 +138,32 @@ class Tree:
         parent_node.children.append(child_node)
 
         self.vertices.append(child_node)
+    
+    def depth(self):
+        d = 0
+        current_level = [self.head]
+        while current_level:
+            next_level = []
+            for node in current_level:
+                for child in node.children:
+                    next_level.append(child)
+            current_level = next_level
+            d += 1
+        return d
+    
+    def get_edge_list(self):
+        edge_list = []
+        current = [self.head]
+        while current:
+            next = []
+            for node in current:
+                for child in node.children:
+                    edge_list.append((node.value,child.value))
+                    next.append(child)
+            current = next
+        return edge_list
+
+
 
 class TreeNode:
     """A tree node.

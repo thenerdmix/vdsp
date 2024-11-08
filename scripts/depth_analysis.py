@@ -1,5 +1,5 @@
-from Graph import *
-from QTree import *
+from compiler.Graph import *
+from compiler.QTree import *
 
 #####RANDOM#####
 print("RANDOM ORDER")

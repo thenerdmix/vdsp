@@ -1,48 +1,13 @@
 from Loop import *
 from Graph import *
+from PhotonicQubit import photons_from_qubit
 from pyzx.utils import VertexType, EdgeType
 
 import perceval as pcvl
 import perceval.components as symb
 
-def get_optimal_tree(g: Graph):
-    optimal_tree = None
-    optimal_outer_loops = -1
-    for v in g.graph.vertices():
-        t = create_tree_dfs(g.graph, list(g.graph.vertices())[v])
-        q = QTree(t.head.value)
-        current_loops = build_optimal(t.head,q)
-        if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:
-            optimal_outer_loops = current_loops
-            optimal_tree = t
-    return (optimal_tree, optimal_outer_loops)
+## perceval.pdisplay(qtree.loop.circuit).save_svg('test3gs')
 
-def get_graph_cost_params(g: Graph):
-    res = {}
-    res['num_vertices'] = len([vertex for vertex in g.graph.vertices() if g.graph.type(vertex) == VertexType.Z])
-    tree, num_outer_loops = get_optimal_tree(g)
-    py_tree(g.graph, tree)
-    res['num_bell_ps'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.SIMPLE])
-    res['num_bell_h'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.HADAMARD])
-    res['num_outer_loops'] = num_outer_loops
-    res['num_inner_loops'] = g.graph.num_vertices() #for now
-    return res
-
-def build_optimal(node, qtree):
-    """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
-
-    :param node: the head of the subtree we are building
-    :type node: TreeNode
-    :param qtree: the QTree object in which we are building the circuit
-    :type qtree: QTree
-    :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
-    :rtype: int
-    """
-    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value)), reverse=False)
-    for c in node.children:
-        qtree.add_edge(node.value, c.value)
-        build_optimal(c, qtree)
-    return max(qtree.cdepth().values())
 
 class QTree:
     """A QTree (=Quantum Tree) is made of a normal tree, a Loop object containing the Qubit objects and the circuit of the problem and a map qvertices that map the vertices id to the corresponding Loop.Qbbit object.
@@ -85,6 +50,19 @@ class QTree:
         q_down = self.qvertices[down]
 
         self.loop.sink(q_up, q_down) 
+    
+    def add_heralded_edge(self, vertex1, vertex2, sink=True):
+        # fuse vertex1 with ancilla, fuse vertex2 with ancilla and fuse2 both ancillas? 
+        # so is it possible to just call add_edge twice and fuse2? 
+
+        ancilla1 = TreeNode(self.last+1)
+        ancilla2 = TreeNode(self.last+2)
+        self.last += 2 # not sure??
+        self.add_edge(vertex1, ancilla1)
+        self.add_edge(vertex2, ancilla2)
+        self.loop.fuse2(vertex1, vertex2) 
+
+        
 
     def add_edge(self, parent, leaf, sink=True):
         """Add an edge between the qubits with index parent and leaf. The qubit with index leaf will be newly created. The qbit parent must be already present in the tree.
@@ -108,6 +86,20 @@ class QTree:
         self.last = leaf
 
         self.loop.fuse(qlost, self.qvertices[parent])
+    
+    def add_edge_no_state_generation(self, parent, leaf, sink=True, fusion_method = "type2"):
+        
+        if(sink and (self.last != parent)):
+            self.sink(parent, self.last)
+        
+        qlost, qparent, qleaf = self.loop.add_ghz_cluster(q0_id=None, q1_id=None, q2_id=leaf)
+
+        self.qvertices[leaf] = qleaf
+        self.last = leaf
+
+        self.loop.fuse2(qlost, self.qvertices[parent])
+        self.qvertices[parent] = qparent
+
 
     def cdepth(self):
         """Given two photonic lines representing a qubit, we can calculate in which outer loop the last optical element on this two lines is positioned (cdepth = calculated depth).
@@ -132,7 +124,6 @@ class QTree:
 
         return cdepth
            
-
 ### this last two functions are not really useful. I used them to prove the correctness of the algorithm describing how the number of loops grows.
     def add_simul(self, parent, leaf, order, depth):
         text_file = open("./compiler/output.txt", "a")
@@ -174,3 +165,44 @@ class QTree:
     def add_overall(self, parent, leaf, order, depth):
         self.add_edge(parent, leaf)
         self.add_simul(parent, leaf, order, depth)
+
+
+def get_optimal_tree(g: Graph):
+    optimal_tree = None
+    optimal_outer_loops = -1
+    for v in g.graph.vertices():
+        t = create_tree_dfs(g.graph, list(g.graph.vertices())[v])
+        q = QTree(t.head.value)
+        current_loops = build_optimal(t.head,q)
+        if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:
+            optimal_outer_loops = current_loops
+            optimal_tree = t
+
+    return (optimal_tree, optimal_outer_loops)
+
+def get_graph_cost_params(g: Graph):
+    res = {}
+    res['num_vertices'] = len([vertex for vertex in g.graph.vertices() if g.graph.type(vertex) == VertexType.Z])
+    tree, num_outer_loops = get_optimal_tree(g)
+    py_tree(g.graph, tree)
+    res['num_bell_ps'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.SIMPLE])
+    res['num_bell_h'] = len([edge for edge in g.graph.edges() if g.graph.edge_type(edge) == EdgeType.HADAMARD])
+    res['num_outer_loops'] = num_outer_loops
+    res['num_inner_loops'] = g.graph.num_vertices() #for now
+    return res
+
+def build_optimal(node, qtree):
+    """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
+
+    :param node: the head of the subtree we are building
+    :type node: TreeNode
+    :param qtree: the QTree object in which we are building the circuit
+    :type qtree: QTree
+    :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
+    :rtype: int
+    """
+    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value)), reverse=False)
+    for c in node.children:
+        qtree.add_edge(node.value, c.value)
+        build_optimal(c, qtree)
+    return max(qtree.cdepth().values())
