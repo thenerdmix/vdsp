@@ -55,12 +55,13 @@ int main(int argc, char *argv[]){
 	//  Load graph from json  //
 	////////////////////////////
 
-	std::ifstream ifs("inp.json");
+	ifstream ifs("inp.json");
+	ifstream proc("proc_order.json");
 	auto jsonData = nlohmann::json::parse(ifs);
+	auto proc_order = nlohmann::json::parse(proc);
 	
 	int nodes = jsonData.size();
 	int edges = nodes - 1;
-
 	// char matrix[3*(1<<(nodes-1))][3*(1<<(nodes-1))];
 	const int matrix_dim = 3*(1<<(nodes-1));
 
@@ -68,6 +69,14 @@ int main(int argc, char *argv[]){
 	
 	vector<vector<int>> a(nodes);
 
+	vector<int> proc_nodes;//order of edge processing
+	for (auto& [key, value] : proc_order.items()) {
+		assert(value.size() == edges);
+		for(int i = 0; i < value.size(); i++){
+			proc_nodes.push_back(value[i]);
+		}
+
+	}
 	for (auto& [key, value] : jsonData.items()) {
         int intKey = std::stoi(key);  // Convert string key to int
         a[intKey] = vector<int>(value); // Insert into the map
@@ -89,7 +98,8 @@ int main(int argc, char *argv[]){
 		vector<int> state_copy = state;
 
 
-		for(int j = 0; j < state.size(); j++){//look for the first edge j that is absent
+		// for(int j = 0; j < state.size(); j++){//look for the first edge j that is absent
+		for(int j : proc_nodes){
 			if (state[j] == 1) continue;
 			state_copy = state;
 			
