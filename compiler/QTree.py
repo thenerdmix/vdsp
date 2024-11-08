@@ -1,6 +1,6 @@
-from Loop import *
-from Graph import *
-from PhotonicQubit import photons_from_qubit
+from compiler.Loop import *
+from compiler.Graph import *
+from compiler.PhotonicQubit import photons_from_qubit
 from pyzx.utils import VertexType, EdgeType
 
 import perceval as pcvl
@@ -19,24 +19,38 @@ class QTree:
     :param last: the id of the last vertex in the photonic circuit
     :type last: int
     """ 
-    def __init__(self, head_id):
-        """Constructor method. When initializing a Quantum Tree we start with a qubit initialized in the state + (hence the Hadamard gate) and we label with this qubit with the integer index head_id"""
-        self.loop = None
-        self.qvertices = {}
+    # def __init__(self, head_id):
+    #     """Constructor method. When initializing a Quantum Tree we start with a qubit initialized in the state + (hence the Hadamard gate) and we label with this qubit with the integer index head_id"""
+    #     self.loop = None
+    #     self.qvertices = {}
         
-        circuit = pcvl.Circuit(2)
-        circuit.add((0, 1), symb.BS.H())
+    #     circuit = pcvl.Circuit(2)
+    #     circuit.add((0, 1), symb.BS.H())
 
-        head_qubit = Qbit(pos=0, logical=False)
+    #     head_qubit = Qbit(pos=0, logical=False)
 
-        self.qvertices[head_id] = head_qubit
-        head_qubit.id = head_id
+    #     self.qvertices[head_id] = head_qubit
+    #     head_qubit.id = head_id
     
-        self.loop = Loop(photons=photons_from_qubit([head_qubit]), qbits=[head_qubit], circuit=circuit)
+    #     self.loop = Loop(photons=photons_from_qubit([head_qubit]), qbits=[head_qubit], circuit=circuit)
 
-        #keep in mind the last vertex that was added to the tree. We will need this to sink qubits at the end of the circuit.
-        self.last = head_id
+    #     #keep in mind the last vertex that was added to the tree. We will need this to sink qubits at the end of the circuit.
+    #     self.last = head_id
     
+
+    def __init__(self, num_qubits):
+        circuit_length = 2+(num_qubits-1)*6
+        circuit = pcvl.Circuit(circuit_length)
+        num_physical_qubits = int(circuit_length/2)
+
+        qubits = [Qbit(pos=2*i+1, logical=False) for i in range(num_physical_qubits)]
+        self.qvertices = {i: qubits[i] for i in range(num_physical_qubits)}
+        for i, qubit in enumerate(qubits):
+            qubit.id = i
+        
+        self.loop = Loop(photons=photons_from_qubit(qubits) ,qbits=qubits, circuit=circuit)
+        self.last = num_physical_qubits - 1
+
 
     def sink(self, up, down):
         """Sink the qubit with integer index up to the position of the qubit with integer position down.
@@ -87,18 +101,27 @@ class QTree:
 
         self.loop.fuse(qlost, self.qvertices[parent])
     
-    def add_edge_no_state_generation(self, parent, leaf, sink=True, fusion_method = "type2"):
+    def add_edge_type2(self, parent, leaf, sink=True):
+        print("add edge",parent, leaf)
+        physical_parent = 1+(parent-1)*3
+        physical_leaf = 1+(leaf-1)*3
+        import pdb
+        pdb.set_trace()
+        if(sink and (physical_leaf-1 != physical_parent)):
+            self.sink(physical_parent, physical_leaf-1)
         
-        if(sink and (self.last != parent)):
-            self.sink(parent, self.last)
+        qlost = physical_leaf
+        # qparent = qlost + 1
+        # qleaf = qparent + 1
+        # qlost, qparent, qleaf = self.loop.add_ghz_cluster(q0_id=None, q1_id=None, q2_id=leaf)
         
-        qlost, qparent, qleaf = self.loop.add_ghz_cluster(q0_id=None, q1_id=None, q2_id=leaf)
+        # self.qvertices[physical_leaf] = qleaf
 
-        self.qvertices[leaf] = qleaf
-        self.last = leaf
-
-        self.loop.fuse2(qlost, self.qvertices[parent])
-        self.qvertices[parent] = qparent
+        self.loop.fuse2(self.qvertices[qlost], self.qvertices[physical_parent])
+        import pdb
+        pdb.set_trace()
+        # self.qvertices[physical_parent] = qparent
+        print("qvertices ",self.qvertices)
 
 
     def cdepth(self):
@@ -191,7 +214,8 @@ def get_graph_cost_params(g: Graph):
     res['num_inner_loops'] = g.graph.num_vertices() #for now
     return res
 
-def build_optimal(node, qtree):
+#TODO: This algorithm as for now is exponential not linear because of the second build_optimal call!
+def build_optimal(node, qtree, fusion_method = "type1"):
     """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
 
     :param node: the head of the subtree we are building
@@ -201,8 +225,36 @@ def build_optimal(node, qtree):
     :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
     :rtype: int
     """
-    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value)), reverse=False)
+    build_optimal.counter += 1
+    node.children.sort(key=lambda x: build_optimal(x, QTree(head_id = x.value), fusion_method), reverse=False)
     for c in node.children:
-        qtree.add_edge(node.value, c.value)
-        build_optimal(c, qtree)
+        if fusion_method == "type1":
+            qtree.add_edge(node.value, c.value)
+        else:
+            qtree.add_edge_type2(node.value, c.value)
+        build_optimal(c, qtree, fusion_method)
     return max(qtree.cdepth().values())
+
+build_optimal.counter = 0
+
+def build_optimal_linear(node, qtree, fusion_method = "type1"):
+    """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
+
+    :param node: the head of the subtree we are building
+    :type node: TreeNode
+    :param qtree: the QTree object in which we are building the circuit
+    :type qtree: QTree
+    :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
+    :rtype: int
+    """
+    print("in build optimal for node",node)
+    build_optimal_linear.counter += 1
+    node.children.sort(key=lambda x: build_optimal_linear(x, qtree, fusion_method), reverse=False)
+    for c in node.children:
+        if fusion_method == "type1":
+            qtree.add_edge(node.value, c.value)
+        else:
+            qtree.add_edge_type2(node.value, c.value)
+    return max(qtree.cdepth().values())
+
+build_optimal_linear.counter = 0
