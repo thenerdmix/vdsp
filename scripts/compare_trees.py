@@ -1,4 +1,4 @@
-from compiler.QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal
+from compiler.QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal, build_optimal_linear
 from graphtheory.approximate_min_deg_st import approximate_min_deg_st
 import networkx as nx
 import random
@@ -61,7 +61,10 @@ def get_optimal_tree(g: nx.Graph, st_extraction_method = dfs):
         vdsp_tree = nx_to_vdsp(t, head)
         q = QTree(head)
         print("before build optimal")
-        current_loops = build_optimal(vdsp_tree.head,q)
+        build_optimal.counter = 0
+        current_loops = build_optimal(vdsp_tree.head,q, fusion_method="type2")
+        #    current_loops = build_optimal_linear(vdsp_tree.head,q, fusion_method="type2")
+        print("build optimal was called ",build_optimal.counter,"times")
         print("current loops for head",head,current_loops)
 
         if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:

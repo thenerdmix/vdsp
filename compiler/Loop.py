@@ -2,9 +2,11 @@ import itertools
 import perceval as pcvl
 import perceval.components as symb
 import numpy as np
+import networkx as nx
 
-from PhotonicQubit import photon_from_position, PhotonPolarization, PhotonType, Qbit, check, format_logical
-from Circuits import *
+from compiler.PhotonicQubit import photon_from_position, PhotonPolarization, PhotonType, Qbit, check, format_logical
+from compiler.Circuits import *
+from perceval.utils import StateGenerator, Encoding
 
 from pprint import pprint
 
@@ -145,6 +147,16 @@ class Loop(object):
                 in_state[p.pos] = p.in_state
                 self.nph += p.in_state
         self.in_state = in_state
+    
+    def calc_in_graph_state_ghz_only(self):
+        """TODO: Do we assume the very first qubit to be a single |+> or should it also be a three qubit GHZ?"""
+        G = nx.Graph()
+        G.add_nodes_from(range(int(len(self.photons)/2)))
+        for i in range(1,int(len(self.photons)/2),3):
+            G.add_edge(i,i+1)
+            G.add_edge(i+1,i+2)
+        generator = StateGenerator(Encoding.DUAL_RAIL)
+        return generator.graph_state(G)
 
     def fuse(self, q1:Qbit, q2:Qbit):
         """Perform fusion of type 1 on the qubit q1 and q2, witnessing the qubit q1.
