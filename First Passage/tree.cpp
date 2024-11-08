@@ -61,7 +61,10 @@ int main(int argc, char *argv[]){
 	int nodes = jsonData.size();
 	int edges = nodes - 1;
 
-	char matrix[3*(1<<(nodes-1))][3*(1<<(nodes-1))];
+	// char matrix[3*(1<<(nodes-1))][3*(1<<(nodes-1))];
+	const int matrix_dim = 3*(1<<(nodes-1));
+
+	vector<vector< char> >  matrix(matrix_dim, vector<char>(matrix_dim));
 	
 	vector<vector<int>> a(nodes);
 
@@ -75,7 +78,6 @@ int main(int argc, char *argv[]){
 	////////////////////
 	//  Create Matrix //
 	////////////////////
-	const int matrix_dim = 3*(1<<(nodes-1));
 
 	for(int i = 0; i < matrix_dim; i++){
 		for(int j = 0; j < matrix_dim; j++){
