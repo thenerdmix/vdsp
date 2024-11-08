@@ -75,29 +75,52 @@ int main(int argc, char *argv[]){
 	////////////////////
 	//  Create Matrix //
 	////////////////////
+	const int matrix_dim = 3*(1<<(nodes-1));
 
-	for(int i = 0; i < 3*(1<<(nodes-1)); i++){
-		for(int j = 0; j < 3*(1<<(nodes-1)); j++){
+	for(int i = 0; i < matrix_dim; i++){
+		for(int j = 0; j < matrix_dim; j++){
 			matrix[i][j] = '0';
 		}
 	}
-	for(int i = 0; i < (1<<(nodes-1));i++){
+	for(int i = 0; i < (1<<(nodes-1));i++){//iterate over edges
 		vector<int> state = get_state(i, nodes);
 		vector<int> state_copy = state;
 
 
-		for(int j = 0; j < state.size(); j++){
+		for(int j = 0; j < state.size(); j++){//look for the first edge j that is absent
 			if (state[j] == 1) continue;
 			state_copy = state;
 			
 			int node_1 = label_to_edge[j+1].first;
 			int node_2 = label_to_edge[j+1].second;
-			if(a[node_1].size()==1 || a[node_2].size()==1){// node_1 or node_2 are leaf
+			bool no_neighbors_1 = true;
+			bool no_neighbors_2 = true;
+
+			for(auto nn : a[node_1]){
+				if(state_copy[edge_labels[{node_1,nn}]-1] == 1){
+					no_neighbors_1 = false;
+				}
+			}
+			for(auto nn : a[node_2]){
+				if(state_copy[edge_labels[{node_2,nn}]-1] == 1){
+					no_neighbors_2 = false;
+				}
+			}
+			if(no_neighbors_1 || no_neighbors_2){//either node_1 or node_2 have no activated edges
 				state_copy[j] = 1;
 				int idx = get_idx(state_copy);
 				state_copy = state;
 				//success
 				matrix[3*idx][3*i] = 'p';
+				matrix[3*i+1][3*i+1] = '1';
+				matrix[3*i+2][3*i+2] = '1';
+				matrix[3*i+1][matrix_dim-1] = 'x';
+				matrix[3*i+2][matrix_dim-1] = 'x';
+				matrix[3*i+1][matrix_dim-2] = 'x';
+				matrix[3*i+2][matrix_dim-2] = 'x';
+				matrix[3*i+1][matrix_dim-3] = 'x';
+				matrix[3*i+2][matrix_dim-3] = 'x';
+
 
 				//failure
 				for(auto nn : a[node_1]){
