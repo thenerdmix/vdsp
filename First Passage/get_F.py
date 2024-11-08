@@ -65,7 +65,7 @@ for p in pvals:
 	allData.append(F[dim-3][0])
 
 
-csvfile = open('FP_data.csv', 'a')
+csvfile = open('FP_data.csv', 'a+')
 spamwriter = csv.writer(csvfile, delimiter=';')
 spamwriter.writerow([jsonFileName, *pvals])
 spamwriter.writerow([jsonFileName, *allData])

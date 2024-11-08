@@ -3,14 +3,15 @@
 cd ../trees
 rm -rf *
 cd ..
-python3 scripts/random-graph-to-tree.py
+python3 scripts/compare_trees.py
 wait
-cd ../First\ Passage
-for file in ../compiler/trees/*; do 
+cd First\ Passage
+for file in ../trees/*; do 
     if [ -f "$file" ]; then
         echo "$file"
-        ./tree "$file" 
+        cp "$file" inp.json
+        ./tree 
         wait
-        python3 get_F.py
+        python3 get_F.py "$file"
     fi 
 done

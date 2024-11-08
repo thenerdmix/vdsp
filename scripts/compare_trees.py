@@ -2,6 +2,7 @@ from compiler.QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal
 from graphtheory.approximate_min_deg_st import approximate_min_deg_st
 import networkx as nx
 import random
+import json
 
 ## helper functions; TODO: fix graph structure, there should not be nx + pyzx graphs + Trees but just one format
 def vdsp_to_nx(T):
@@ -72,17 +73,45 @@ def get_optimal_tree(g: nx.Graph, st_extraction_method = dfs):
             optimal_tree = t
     return (optimal_tree, optimal_outer_loops)
 
+def dump_tree2(tree, filename):
+    """same as dump_tree but we change the indexing, so that vertex 0 is always root 
+    this is later needed for first passage time calculation where 0 is always the vertex to start the fusion from
+    yet still not optimal, because in first passage time calculation we cannot yet fix a specific fusion order"""
+    conv_map = dict({tree.head.value: 0})
+    queue = [tree.head]
+    counter = 1
+    # convert tree indexing so that root is element 0
+    while queue:
+        current_node = queue.pop()
+        for child in reversed(current_node.children):
+            conv_map[child.value] = counter
+            counter += 1
+            queue.append(child)
+    
+    tree_dict = dict()
+    for v in tree.vertices:
+        neighbors = v.children + [v.parent]
+        tree_dict[conv_map[v.value]] = [conv_map[neighbor.value] for neighbor in neighbors if neighbor]
+    print(tree_dict)
+    # import pdb
+    # pdb.set_trace()
+    with open(filename, 'w') as f:
+        json.dump(tree_dict, f)
+
+
 def compare_methods(G: nx.Graph):
     methods = {'min_degree': min_degree_dfs, 'dfs': dfs, 'longest_line': longest_line_dfs, 'min_degree_longest_line': min_degree_longest_line}
     for name, method in methods.items():
-        optimum = get_optimal_tree(G, method)
+        tree = method(G)
+        dump_tree2(nx_to_vdsp(tree, 0),'trees/tree_'+name+'.json')
+        # optimum = get_optimal_tree(G, method)
         # import pdb
         # pdb.set_trace()
-        print("num outer loops ",name,":",optimum[1])
+        # print("num outer loops ",name,":",optimum[1])
 
 if __name__ == "__main__":
     random.seed(2234)
-    G = nx.erdos_renyi_graph(13,0.4)
+    G = nx.erdos_renyi_graph(10,0.9)
     print("G with edges",G.edges)
     compare_methods(G)
 
