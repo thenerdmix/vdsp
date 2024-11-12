@@ -468,9 +468,14 @@ class Loop(object):
 
     def ampli(self, in_state = [], out_state = [], backend="Naive"):
         """Perceval built-in function to calculate amplitudes"""
-        backend = pcvl.BackendFactory.get_backend(backend)
-        sim = backend(self.circuit)
-        return(sim.probampli_be(input_state=pcvl.BasicState(in_state), output_state = pcvl.BasicState(out_state)))
+        backend = pcvl.backends.NaiveBackend()
+        backend.set_circuit(self.circuit)
+        backend.set_input_state(pcvl.BasicState(in_state))
+        # for old perceval versions:
+        # backend = pcvl.BackendFactory.get_backend(backend)
+        # sim = backend(self.circuit)
+        # return(sim.probampli_be(input_state=pcvl.BasicState(in_state), output_state = pcvl.BasicState(out_state)))
+        return(backend.prob_amplitude(pcvl.BasicState(out_state)))
 
     def loopify(self, display = True):
         """Function to rewrite the circuit in a format where the optical elements are divided accordingly to the corresponding outer loop they are performed in.
