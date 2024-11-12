@@ -12,23 +12,29 @@ class LOTree:
         self.tree = Tree(TreeNode(node))
     
     def add_edge(self, node1, node2):
-        num_modes = self.circuit.m
-        if not (node1 in self.vertex_pos_map.keys() or node2 in self.vertex_pos_map.keys()):
-            if not self.vertex_pos_map.keys():
-                new_circuit = pcvl.Circuit(12)
-                new_circuit.add(0, self.circuit, merge=True)
-                fuse2(new_circuit,Qbit(4),Qbit(6))
-                self.vertex_pos_map[node1] = 8
-                self.vertex_pos_map[node2] = 10
-            else:
-                new_circuit = pcvl.Circuit(num_modes+12)
-                new_circuit.add(0, self.circuit, merge=True)
-                fuse2(new_circuit,Qbit(num_modes+4),Qbit(num_modes+6))
-                self.vertex_pos_map[node1] = num_modes+8
-                self.vertex_pos_map[node2] = num_modes+10
+        """Adds a tree edge to the linear optics circuit distinguishing between four cases: 
+        - if none of the nodes are present, we add two ghzs at the end and fuse them
+        - if only the parent node is present, we add the child at the end, sink the parent and fuse
+        - if only the child is present (assumed to be at the first six modes), we insert the parent at the beginning and fuse
+        - if both are present, do not increase the circuit but just sink the parent and fuse"""
 
+        if not self.vertex_pos_map:
+            num_modes = 0
+        else:
+            num_modes = self.circuit.m
+        
+        existing_nodes = self.vertex_pos_map.keys()
 
-        elif node1 in self.vertex_pos_map.keys() and not node2 in self.vertex_pos_map.keys():
+        if not (node1 in existing_nodes or node2 in existing_nodes):
+            new_circuit = pcvl.Circuit(num_modes+12)
+            new_circuit.add(0, self.circuit, merge=True)
+            fuse2(new_circuit,Qbit(num_modes+4),Qbit(num_modes+6))
+
+            #update position map
+            self.vertex_pos_map[node1] = num_modes+8
+            self.vertex_pos_map[node2] = num_modes+10
+
+        elif node1 in existing_nodes and not node2 in existing_nodes:
             new_circuit = pcvl.Circuit(num_modes+6)
             new_circuit.add(0, self.circuit, merge=True)
             sink(new_circuit, Qbit(self.vertex_pos_map[node1]), Qbit(num_modes-2))
@@ -41,14 +47,15 @@ class LOTree:
             self.vertex_pos_map[node1] = num_modes+2
             self.vertex_pos_map[node2] = num_modes+4
 
-        elif node2 in self.vertex_pos_map.keys() and not node1 in self.vertex_pos_map.keys():
+        elif node2 in existing_nodes and not node1 in existing_nodes:
             new_circuit = pcvl.Circuit(num_modes+6)
-            for vertex in self.vertex_pos_map.keys():
-                self.vertex_pos_map[vertex] += 6
-
             fuse2(new_circuit,Qbit(4),Qbit(6))
-            self.vertex_pos_map[node1] = 8
             new_circuit.add(6, self.circuit, merge=True)
+
+            #update position map
+            for vertex in existing_nodes:
+                self.vertex_pos_map[vertex] += 6
+            self.vertex_pos_map[node1] = 8
 
         else:
             new_circuit = self.circuit
@@ -62,15 +69,16 @@ class LOTree:
             self.vertex_pos_map[node1] = self.vertex_pos_map[node2]-2
         
         self.circuit = new_circuit
-        print("added edge",node1,node2)
-        pcvl.pdisplay(self.circuit).save_png("addedge"+str(node1)+str(node2)+".png")
     
     
     def merge(self, other, parent, child):
+        """merges two LOTree objects. self is parent object, other the child object"""
+        # merge circuits 
         new_circuit = pcvl.Circuit(self.circuit.m-6+other.circuit.m)
         new_circuit.add(0,self.circuit, merge=True)
         new_circuit.add(self.circuit.m-6,other.circuit, merge=True)
         self.circuit = new_circuit
+        # merge trees
         if other.tree:
             self.tree.vertices += other.tree.vertices
             parent_idx = [i for i in range(len(self.tree.vertices)) if self.tree.vertices[i].value == parent][0]
@@ -208,14 +216,6 @@ def loopify(circuit, display = False):
     return depth, last
 
 
-def test():
-    lotree = LOTree()
-    lotree.add_edge(2,3)
-    lotree.add_edge(2,4)
-    lotree.add_edge(1,2)
-    lotree.add_edge(1,5)
-    return lotree
-
 def build_optimal_linear(node, lotree):
     """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
 
@@ -226,7 +226,7 @@ def build_optimal_linear(node, lotree):
     :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
     :rtype: int
     """
-    
+
     children = [(x, build_optimal_linear(x, LOTree(x.value))) for x in node.children]
     children.sort(key=lambda x: x[1][1])
 
