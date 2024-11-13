@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 
 	vector<int> proc_nodes;//order of edge processing
 	for (auto& [key, value] : proc_order.items()) {
-		assert(value.size() == edges);
+		assert(value.size() == edges && "number of elements in proc_order.json doesn't match number of edges");
 		for(int i = 0; i < value.size(); i++){
 			proc_nodes.push_back(value[i]);
 		}
@@ -83,6 +83,11 @@ int main(int argc, char *argv[]){
     }
 
 	generate_edge_labels(edge_labels,label_to_edge, a);//run from 1...nodes
+
+	// for(int i = 1; i <= 8; i++){
+	// 	cout<<label_to_edge[i].first<<" "<<label_to_edge[i].second<<endl;
+	// }
+	// return 0;
 
 	////////////////////
 	//  Create Matrix //
