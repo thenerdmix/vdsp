@@ -31,23 +31,47 @@ def create_tree_dfs(graph, head_value):
     tree_head = TreeNode(head_value)
     t = Tree(tree_head)
 
-    stack = []
-    stack.append(tree_head)
-    visited.add(tree_head.value)
-
+    stack = [(head_value,child) for child in graph.neighbors(head_value)]
+    visited.add(head_value)
     while stack:
-        node = stack.pop()
-        t.vertices.append(node)
-
-        for n in graph.neighbors(node.value):
-            if n not in visited:
-                tree_n = TreeNode(n)
-                tree_n.parent = node
-                node.children.append(tree_n)
-
-                visited.add(n)
-                stack.append(tree_n)
+        parent, child = stack.pop()
+        if child in visited:
+            continue
+        else:
+            visited.add(child)
+            child_node = TreeNode(child)
+            t.vertices.append(child_node)
+            child_node.parent = [node for node in t.vertices if node.value == parent][0]
+            child_node.parent.children.append(child_node)
+            for subchild in graph.neighbors(child):
+                stack.append((child,subchild))
     return t
+
+# def create_tree_dfs(graph, head_value):
+#     # commented out, because this is actually a bfs not a dfs
+#     visited = set()
+
+#     tree_head = TreeNode(head_value)
+#     t = Tree(tree_head)
+
+#     stack = []
+#     stack.append(tree_head)
+#     visited.add(tree_head.value)
+
+#     while stack:
+#         node = stack.pop()
+#         t.vertices.append(node)
+#         visited.add(node.value)
+
+#         for n in graph.neighbors(node.value):
+#             if n not in visited:
+#                 tree_n = TreeNode(n)
+#                 tree_n.parent = node
+#                 node.children.append(tree_n)
+                
+#                 stack.append(tree_n)
+#                 break
+#     return t
 
 def traverse_dfs(tree, head_node):
     """Given a tree and a starting node, returns the new tree given by a DFS starting from head_node.
@@ -59,6 +83,7 @@ def traverse_dfs(tree, head_node):
     :return: the tree
     :rtype: the traversed tree
     """
+    # TODO: This may actually be a bfs, check this before using the function
     visited = set()
 
     tree_head = TreeNode(head_node.value)

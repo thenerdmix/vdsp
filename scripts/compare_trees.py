@@ -1,8 +1,11 @@
-from compiler.QTree import create_tree_dfs, Tree, TreeNode, QTree, build_optimal, build_optimal_linear
+from compiler.Graph import create_tree_dfs, Tree, TreeNode
+from compiler.LOTree import LOTree, build_optimal_linear
 from graphtheory.approximate_min_deg_st import approximate_min_deg_st
 import networkx as nx
 import random
 import json
+import perceval as pcvl
+import matplotlib.pyplot as plt
 
 ## helper functions; TODO: fix graph structure, there should not be nx + pyzx graphs + Trees but just one format
 def vdsp_to_nx(T):
@@ -60,18 +63,75 @@ def get_optimal_tree(g: nx.Graph, st_extraction_method = dfs):
     t = st_extraction_method(g)
     for head in t.nodes:
         vdsp_tree = nx_to_vdsp(t, head)
-        q = QTree(head)
-        print("before build optimal")
-        build_optimal.counter = 0
-        current_loops = build_optimal(vdsp_tree.head,q, fusion_method="type2")
+        q = LOTree(head)
+        # print("before build optimal")
+        current_optimal_tree, current_loops = build_optimal_linear(vdsp_tree.head,q)
         #    current_loops = build_optimal_linear(vdsp_tree.head,q, fusion_method="type2")
-        print("build optimal was called ",build_optimal.counter,"times")
-        print("current loops for head",head,current_loops)
 
         if optimal_outer_loops == -1 or current_loops < optimal_outer_loops:
             optimal_outer_loops = current_loops
-            optimal_tree = t
+            optimal_tree = current_optimal_tree
     return (optimal_tree, optimal_outer_loops)
+
+def dump_tree_and_proc_order(tree: LOTree, tree_filename, proc_order_filename):
+    proc_order = {'order': get_edge_order(tree)}
+    tree_map = dict()
+    # for i,node in enumerate(tree.fusion_order()):
+    #     proc_order[node] = i
+    # todo: traverse tree in bfs order and set the correct order from fusion order
+    
+    
+    # convert tree indexing so that root is element 0
+    conv_map = dict({tree.tree.head.value: 0})
+    queue = [tree.tree.head]
+    counter = 1
+    while queue:
+        current_node = queue.pop()
+        for child in reversed(current_node.children):
+            conv_map[child.value] = counter
+            counter += 1
+            queue.append(child)
+    # import pdb
+    # pdb.set_trace()
+    for node in tree.tree.vertices:
+        tree_map[conv_map[node.value]] = [conv_map[neighbor.value] for neighbor in [node.parent]+node.children if neighbor]
+    
+    # for node in tree.tree.vertices:
+    #     for child in node.children:
+    #         tree_map[child.value].append(node.value)
+    
+    with open(tree_filename, 'w') as f:
+        json.dump(tree_map, f)
+    
+    with open(proc_order_filename, 'w') as f:
+        json.dump(proc_order, f)
+
+def get_edge_order(tree: LOTree):
+    order = [-1 for _ in range(len(tree.tree.vertices)-1)]
+    fusion_order = tree.fusion_order()
+    visited = [tree.tree.head.value] + [child.value for child in tree.tree.head.children]
+    stack = [child for child in tree.tree.head.children]
+    idx = -1 
+    while stack:
+        node = stack.pop(0)
+        idx += 1
+        # print('nval',node.value)
+        # print('fo',fusion_order.index(node.value)-1)
+        order[fusion_order.index(node.value)-1] = idx
+        for child in node.children:
+            if not child.value in visited:
+                stack.append(child)
+    # import pdb
+    # pdb.set_trace()
+    return order
+
+def print_tree(lotree: LOTree):
+    expand = [(lotree.tree.head,0)]
+    while expand:
+        vertex,depth = expand.pop()
+        print(" "*(4*(depth-1))+("|---" if depth > 0 else "")+str(vertex.value))
+        for child in reversed(vertex.children):
+            expand.append((child, depth+1))
 
 def dump_tree2(tree, filename):
     """same as dump_tree but we change the indexing, so that vertex 0 is always root 
@@ -87,7 +147,7 @@ def dump_tree2(tree, filename):
             conv_map[child.value] = counter
             counter += 1
             queue.append(child)
-    
+
     tree_dict = dict()
     for v in tree.vertices:
         neighbors = v.children + [v.parent]
@@ -102,16 +162,29 @@ def dump_tree2(tree, filename):
 def compare_methods(G: nx.Graph):
     methods = {'min_degree': min_degree_dfs, 'dfs': dfs, 'longest_line': longest_line_dfs, 'min_degree_longest_line': min_degree_longest_line}
     for name, method in methods.items():
-        tree = method(G)
-        dump_tree2(nx_to_vdsp(tree, 0),'trees/tree_'+name+'.json')
-        # optimum = get_optimal_tree(G, method)
-        # import pdb
-        # pdb.set_trace()
-        # print("num outer loops ",name,":",optimum[1])
+        # tree = method(G)
+        # dump_tree2(nx_to_vdsp(tree, 0),'trees/tree_'+name+'.json')
+        optimum = get_optimal_tree(G, method)
+        dump_tree_and_proc_order(optimum[0],'trees/tree_'+name+'.json','proc_order/tree_'+name+'.json')
+        print_tree(optimum[0])
+        print("num outer loops ",name,":",optimum[1], "min degree", max([len(node.children)+1 for node in optimum[0].tree.vertices]))
+        # pcvl.pdisplay(optimum[0].circuit, output_format='SVG')
 
 if __name__ == "__main__":
-    random.seed(2234)
-    G = nx.erdos_renyi_graph(10,0.9)
-    print("G with edges",G.edges)
-    compare_methods(G)
+    random.seed(2334)
+    G = nx.erdos_renyi_graph(30,0.05)
+
+    # ensure connectedness
+    C = list(nx.connected_components(G))
+    for idx in range(1,len(C)):
+        G.add_edge(list(C[idx-1])[0],list(C[idx])[0])
+    
+    if not nx.is_connected(G):
+        print("G is not connected, abort")
+    else:
+        print("G with edges",G.edges)
+        nx.draw(G)
+        plt.savefig("original_graph.png")
+
+        compare_methods(G)
 
