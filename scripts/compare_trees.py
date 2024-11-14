@@ -6,6 +6,7 @@ import random
 import json
 import perceval as pcvl
 import matplotlib.pyplot as plt
+import pandas as pd
 
 ## helper functions; TODO: fix graph structure, there should not be nx + pyzx graphs + Trees but just one format
 def vdsp_to_nx(T):
@@ -161,18 +162,26 @@ def dump_tree2(tree, filename):
 
 def compare_methods(G: nx.Graph):
     methods = {'min_degree': min_degree_dfs, 'dfs': dfs, 'longest_line': longest_line_dfs, 'min_degree_longest_line': min_degree_longest_line}
+    data = []
     for name, method in methods.items():
         # tree = method(G)
         # dump_tree2(nx_to_vdsp(tree, 0),'trees/tree_'+name+'.json')
         optimum = get_optimal_tree(G, method)
         dump_tree_and_proc_order(optimum[0],'trees/tree_'+name+'.json','proc_order/tree_'+name+'.json')
         print_tree(optimum[0])
+        max_degree = max([len(node.children)+1 for node in optimum[0].tree.vertices])
+        depth = optimum[0].tree.depth()
+        data.append([max_degree, depth,optimum[1]])
+        # new_data = pd.DataFrame([[max_degree, depth,optimum[1]]], columns=['max_degree','depth','outer_loops'], index=[name])
+        # df = pd.concat([df,new_data])
         print("num outer loops ",name,":",optimum[1], "min degree", max([len(node.children)+1 for node in optimum[0].tree.vertices]))
         # pcvl.pdisplay(optimum[0].circuit, output_format='SVG')
+    df = pd.DataFrame(data, columns=['max_degree','depth','outer_loops'], index=methods.keys())
+    df.to_csv('First Passage/FP_data.csv')
 
 if __name__ == "__main__":
     random.seed(2334)
-    G = nx.erdos_renyi_graph(30,0.05)
+    G = nx.erdos_renyi_graph(8,0.3)
 
     # ensure connectedness
     C = list(nx.connected_components(G))

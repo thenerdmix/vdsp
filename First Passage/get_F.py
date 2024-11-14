@@ -2,12 +2,12 @@ import string
 import numpy as np
 import sys
 from numpy.linalg import matrix_power
-import csv
-import sys
+import pandas as pd
 
 
 
 file = open('matrix.txt')
+df = pd.read_csv('FP_data.csv')
 
 jsonFileName = sys.argv[1] 
 mat_orig = []
@@ -21,8 +21,14 @@ divs = 0
 for i in range(dim):
 	if(mat_orig[i][dim-1]!="x"):
 		divs += 1
-allData = []
 pvals = [0.1, 0.5, 0.75, 0.8, 0.9,0.95,1.0]
+if "0.1" in df:
+	allData = {str(p): list(filter(lambda v: v==v, df[str(p)])) for p in pvals}
+else:
+	allData = {str(p): [] for p in pvals}
+df = pd.read_csv('FP_data.csv')
+# datadict = {str(p): [] for }
+
 for p in pvals:
 	# print(p)
 	mp = {}
@@ -62,10 +68,12 @@ for p in pvals:
 	Z0 = np.diag(np.diag(Z))
 	F = np.matmul(Dmat,np.identity(dim)-Z+np.matmul(Z0,E))
 	print("{} {}".format(p,F[dim-3][0]))
-	allData.append(F[dim-3][0])
+	# df[str(p)].append(F[dim-3][0])
+	allData[str(p)].append(F[dim-3][0])
 
 
-csvfile = open('FP_data.csv', 'a+')
-spamwriter = csv.writer(csvfile, delimiter=';')
-spamwriter.writerow([jsonFileName, *pvals])
-spamwriter.writerow([jsonFileName, *allData])
+for k,v in allData.items():
+	#fill up columns with nans if we have not calculated the entry yet
+	df[k] = v + [np.nan for _ in range(len(v),len(df['max_degree']))]
+
+df.to_csv('FP_data.csv', index=False)
