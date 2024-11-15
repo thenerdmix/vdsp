@@ -7,9 +7,12 @@ import pandas as pd
 
 
 file = open('matrix.txt')
-df = pd.read_csv('FP_data.csv')
+jsonFileName = sys.argv[1]
+if len(sys.argv) > 2:
+	csvFileName = sys.argv[2]
+else:
+	csvFileName = 'FP_data.csv'
 
-jsonFileName = sys.argv[1] 
 mat_orig = []
 for line in file:
 	mat_orig.append(line.split())
@@ -22,12 +25,13 @@ for i in range(dim):
 	if(mat_orig[i][dim-1]!="x"):
 		divs += 1
 pvals = [0.1, 0.5, 0.75, 0.8, 0.9,0.95,1.0]
+
+df = pd.read_csv(csvFileName)
 if "0.1" in df:
 	allData = {str(p): list(filter(lambda v: v==v, df[str(p)])) for p in pvals}
 else:
 	allData = {str(p): [] for p in pvals}
-df = pd.read_csv('FP_data.csv')
-# datadict = {str(p): [] for }
+
 
 for p in pvals:
 	# print(p)
@@ -76,4 +80,4 @@ for k,v in allData.items():
 	#fill up columns with nans if we have not calculated the entry yet
 	df[k] = v + [np.nan for _ in range(len(v),len(df['max_degree']))]
 
-df.to_csv('FP_data.csv', index=False)
+df.to_csv(csvFileName, index=False)

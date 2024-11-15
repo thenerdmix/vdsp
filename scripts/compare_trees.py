@@ -75,7 +75,7 @@ def get_optimal_tree(g: nx.Graph, st_extraction_method = dfs):
     return (optimal_tree, optimal_outer_loops)
 
 def dump_tree_and_proc_order(tree: LOTree, tree_filename, proc_order_filename):
-    proc_order = {'order': get_edge_order(tree)}
+    proc_order = {'order': get_edge_order2(tree)}
     tree_map = dict()
     # for i,node in enumerate(tree.fusion_order()):
     #     proc_order[node] = i
@@ -106,6 +106,35 @@ def dump_tree_and_proc_order(tree: LOTree, tree_filename, proc_order_filename):
     
     with open(proc_order_filename, 'w') as f:
         json.dump(proc_order, f)
+
+def get_edge_order2(tree: LOTree):
+    order = []
+    edge_idx = 0
+    visited = []
+    conv_map = {}
+    tree.tree.vertices.sort(key= lambda node: node.value)
+    for parent in tree.tree.vertices:
+        neighbor_list = [ n for n in parent.children + [parent.parent] if n]
+        neighbor_list.sort(key=lambda node: node.value)
+        for neighbor in neighbor_list:
+            if not neighbor.value in visited:
+                conv_map[frozenset([parent.value,neighbor.value])] = edge_idx
+                edge_idx += 1
+        visited.append(parent.value)
+    
+    visited = [tree.tree.head.value]
+    stack = [tree.tree.head]
+    while stack:
+        node = stack.pop()
+        node.children.sort(key= lambda node: node.value)
+        for child in reversed(node.children):
+            if not child.value in visited:
+                visited.append(child.value)
+                stack.append(child)
+
+        if node.parent:
+            order.append(conv_map[frozenset([node.parent.value,node.value])])
+    return order
 
 def get_edge_order(tree: LOTree):
     order = [-1 for _ in range(len(tree.tree.vertices)-1)]
