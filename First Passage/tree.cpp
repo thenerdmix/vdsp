@@ -84,10 +84,12 @@ int main(int argc, char *argv[]){
 
 	generate_edge_labels(edge_labels,label_to_edge, a);//run from 1...nodes
 
-	// for(int i = 1; i <= 8; i++){
-	// 	cout<<label_to_edge[i].first<<" "<<label_to_edge[i].second<<endl;
-	// }
-	// return 0;
+	cout<<"Edge labels "<<endl;
+	cout<<"============"<<endl;
+
+	for(int i = 1; i <= label_to_edge.size(); i++){
+		cout<<i<<" <-> {"<<label_to_edge[i].first<<" "<<label_to_edge[i].second<<"}"<<endl;
+	}
 
 	////////////////////
 	//  Create Matrix //
@@ -98,12 +100,13 @@ int main(int argc, char *argv[]){
 			matrix[i][j] = '0';
 		}
 	}
-	for(int i = 0; i < (1<<(nodes-1));i++){//iterate over edges
+	for(int i = 0; i < (1<<(nodes-1));i++){//iterate over all edge configurations
 		vector<int> state = get_state(i, nodes);
 		vector<int> state_copy = state;
 
 
 		// for(int j = 0; j < state.size(); j++){//look for the first edge j that is absent
+
 		for(int j : proc_nodes){
 			if (state[j] == 1) continue;
 			state_copy = state;
@@ -144,7 +147,7 @@ int main(int argc, char *argv[]){
 					state_copy[edge_labels[{node_1,nn}]-1] = 0;
 				}
 				for(auto nn : a[node_2]){
-					state_copy[edge_labels[{node_1,nn}]-1] = 0;
+					state_copy[edge_labels[{node_2,nn}]-1] = 0;
 				}
 				idx = get_idx(state_copy);
 				state_copy = state;
