@@ -216,7 +216,7 @@ def loopify(circuit, display = False):
     return depth, last
 
 
-def build_optimal_linear(node, lotree):
+def build_optimal_linear(node, lotree, reversed=False):
     """Build the optimal DFS-ordered circuit on the object qtree. The idea is to order each vertex's children, recursively computing the weight of the subtrees. To compute the weight of the subtree we lunch the function on a newly created QTree object.
 
     :param node: the head of the subtree we are building
@@ -225,10 +225,11 @@ def build_optimal_linear(node, lotree):
     :type qtree: QTree
     :return: the number of outer loops needed to build the subtree with head the TreeNode head. We compute it 
     :rtype: int
+    if reversed we get the worst dfs order instead
     """
 
-    children = [(x, build_optimal_linear(x, LOTree(x.value))) for x in node.children]
-    children.sort(key=lambda x: x[1][1])
+    children = [(x, build_optimal_linear(x, LOTree(x.value), reversed)) for x in node.children]
+    children.sort(key=lambda x: x[1][1], reverse=reversed)
 
     for child, childtree in children:
         lotree.add_edge(node.value, child.value)
