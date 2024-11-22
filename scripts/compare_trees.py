@@ -136,25 +136,6 @@ def get_edge_order2(tree: LOTree):
             order.append(conv_map[frozenset([node.parent.value,node.value])])
     return order
 
-def get_edge_order(tree: LOTree):
-    order = [-1 for _ in range(len(tree.tree.vertices)-1)]
-    fusion_order = tree.fusion_order()
-    visited = [tree.tree.head.value] + [child.value for child in tree.tree.head.children]
-    stack = [child for child in tree.tree.head.children]
-    idx = -1 
-    while stack:
-        node = stack.pop(0)
-        idx += 1
-        # print('nval',node.value)
-        # print('fo',fusion_order.index(node.value)-1)
-        order[fusion_order.index(node.value)-1] = idx
-        for child in node.children:
-            if not child.value in visited:
-                stack.append(child)
-    # import pdb
-    # pdb.set_trace()
-    return order
-
 def print_tree(lotree: LOTree):
     expand = [(lotree.tree.head,0)]
     while expand:
