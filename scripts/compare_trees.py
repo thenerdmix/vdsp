@@ -107,21 +107,9 @@ def dump_tree_and_proc_order(tree: LOTree, tree_filename, proc_order_filename):
     with open(proc_order_filename, 'w') as f:
         json.dump(proc_order, f)
 
-def get_edge_order2(tree: LOTree):
+def get_edge_order_minimal_depth_dfs(tree: LOTree):
     order = []
-    edge_idx = 0
-    visited = []
-    conv_map = {}
-    tree.tree.vertices.sort(key= lambda node: node.value)
-    for parent in tree.tree.vertices:
-        neighbor_list = [ n for n in parent.children + [parent.parent] if n]
-        neighbor_list.sort(key=lambda node: node.value)
-        for neighbor in neighbor_list:
-            if not neighbor.value in visited:
-                conv_map[frozenset([parent.value,neighbor.value])] = edge_idx
-                edge_idx += 1
-        visited.append(parent.value)
-    
+    conv_map = get_edge_order_dict(tree)
     visited = [tree.tree.head.value]
     stack = [tree.tree.head]
     while stack:
@@ -135,6 +123,95 @@ def get_edge_order2(tree: LOTree):
         if node.parent:
             order.append(conv_map[frozenset([node.parent.value,node.value])])
     return order
+
+def get_edge_order_bfs(tree: LOTree):
+    conv_map = get_edge_order_dict(tree)
+    order = []
+    visited = [tree.tree.head.value]
+    stack = [tree.tree.head]
+    while stack:
+        node = stack.pop(0)
+        node.children.sort(key= lambda node: node.value)
+        for child in node.children:
+            if not child.value in visited:
+                visited.append(child.value)
+                stack.append(child)
+
+        if node.parent:
+            order.append(conv_map[frozenset([node.parent.value,node.value])])
+    return order
+
+def get_edge_order_random_bfs(tree: LOTree):
+    conv_map = get_edge_order_dict(tree)
+    order = []
+    visited = [tree.tree.head.value]
+    stack = [tree.tree.head]
+    while stack:
+        node = stack.pop(0)
+        children = node.children
+        random.shuffle(children)
+        for child in children:
+            if not child.value in visited:
+                visited.append(child.value)
+                stack.append(child)
+
+        if node.parent:
+            order.append(conv_map[frozenset([node.parent.value,node.value])])
+    return order
+
+def get_edge_order_random(tree: LOTree):
+    conv_map = get_edge_order_dict(tree)
+    order = []
+    visited = [tree.tree.head.value]
+    stack = [tree.tree.head]
+    while stack:
+        node = stack.pop()
+        node.children.sort(key= lambda node: node.value)
+        for child in reversed(node.children):
+            if not child.value in visited:
+                visited.append(child.value)
+                stack.append(child)
+
+        if node.parent:
+            order.append(conv_map[frozenset([node.parent.value,node.value])])
+        random.shuffle(stack)
+    return order
+
+def get_edge_order_random_dfs(tree: LOTree):
+    conv_map = get_edge_order_dict(tree)
+    order = []
+    visited = [tree.tree.head.value]
+    stack = [tree.tree.head]
+    while stack:
+        node = stack.pop()
+        children = node.children
+        random.shuffle(children)
+        for child in children:
+            if not child.value in visited:
+                visited.append(child.value)
+                stack.append(child)
+
+        if node.parent:
+            order.append(conv_map[frozenset([node.parent.value,node.value])])
+        # random.shuffle(stack)
+    return order
+
+
+def get_edge_order_dict(tree: Tree):
+    edge_idx = 0
+    visited = []
+    conv_map = {}
+    tree.tree.vertices.sort(key= lambda node: node.value)
+    for parent in tree.tree.vertices:
+        neighbor_list = [ n for n in parent.children + [parent.parent] if n]
+        neighbor_list.sort(key=lambda node: node.value)
+        for neighbor in neighbor_list:
+            if not neighbor.value in visited:
+                conv_map[frozenset([parent.value,neighbor.value])] = edge_idx
+                edge_idx += 1
+        visited.append(parent.value)
+
+    return conv_map
 
 def print_tree(lotree: LOTree):
     expand = [(lotree.tree.head,0)]
